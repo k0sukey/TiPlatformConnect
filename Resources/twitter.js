@@ -1,6 +1,6 @@
 var exports = exports || this;
 exports.Twitter = (function(global) {
-  var K = function(){}, isAndroid = Ti.Platform.osname === "android", jsOAuth = require('jsOAuth-1.3.1');
+  var K = function(){}, isAndroid = Ti.Platform.osname === "android", jsOAuth = require('lib/jsOAuth-1.3.3');
   
   /**
    * Twitter constructor function
@@ -32,6 +32,8 @@ exports.Twitter = (function(global) {
     
     if (!options) { options = {}; }
     self.windowTitle = options.windowTitle || "Twitter Authorization";
+    self.windowClose = options.windowClose || "Close";
+    self.windowBack = options.windowBack || "Back";
     self.consumerKey = options.consumerKey;
     self.consumerSecret = options.consumerSecret;
     self.authorizeUrl = "https://api.twitter.com/oauth/authorize";
@@ -69,10 +71,10 @@ exports.Twitter = (function(global) {
           color: 'white'
         }),
         closeButton = Ti.UI.createButton({
-          title: "Close"
+          title: this.windowClose
         }),
         backButton = Ti.UI.createButton({
-          title: "Back"
+          title: this.windowBack
         });
 
     this.webView = webView;
@@ -138,14 +140,16 @@ exports.Twitter = (function(global) {
           oauth.accessTokenUrl = "https://api.twitter.com/oauth/access_token?oauth_verifier=" + pin;
           
           oauth.fetchAccessToken(function(data) {
-            var returnedParams = oauth.parseTokenRequest(data.text);
+//            var returnedParams = oauth.parseTokenRequest(data.text);
             self.fireEvent('login', {
               success: true,
               error: false,
-              accessTokenKey: returnedParams.oauth_token,
-              accessTokenSecret: returnedParams.oauth_token_secret
+//              accessTokenKey: returnedParams.oauth_token,
+              accessTokenKey: oauth.getAccessTokenKey(),
+//              accessTokenSecret: returnedParams.oauth_token_secret
+              accessTokenSecret: oauth.getAccessTokenSecret()
             });
-            
+            self.authorized = true;
             if (isAndroid) { // we have to wait until now to close the modal window on Android: http://developer.appcelerator.com/question/91261/android-probelm-with-httpclient
               webViewWindow.close();
             }
@@ -224,7 +228,7 @@ exports.Twitter = (function(global) {
           result: data
         });
       },
-      failure: function(data) { 
+      error: function(data) { 
         callback.call(self, {
           success: false,
           error: "Request failed",
