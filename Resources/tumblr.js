@@ -1,6 +1,6 @@
 var exports = exports || this;
 exports.Tumblr = (function(global){
-	var K = function(){}, isAndroid = Ti.Platform.osname === "android", jsOAuth = require('lib/jsOAuth-1.3.3');
+	var K = function(){}, isAndroid = Ti.Platform.osname === "android", jsOAuth = require('jsOAuth-1.3.3');
 
 	var Tumblr = function(options) {
 		var self;
