@@ -4,7 +4,6 @@
 * Added tumblr.js using OAuth(not XAuth). Dose not change how to use twitter.js
 
 ```
-
 twitter-titanium is a client-side Twitter library for Titanium Mobile. It simplifies the task of authenticating a user via Twitter. A backend is not required.
 It's designed to emulate the API of the Facebook module included in Titanium Mobile.
 
