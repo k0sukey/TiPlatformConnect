@@ -4,6 +4,7 @@
 * Added tumblr.js using OAuth(not XAuth). Dose not change how to use twitter.js
 * Added foursquare.js. Dose not change how to use twitter.js
 * Added flickr.js. Dose not change how to use twitter.js, and extend getUserNsid(), getUsername().
+* Rewrite the app.js
 
 ## tumblr.js
 
