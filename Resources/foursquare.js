@@ -1,6 +1,6 @@
 var exports = exports || this;
 exports.Foursquare = (function(global){
-	var K = function(){}, isAndroid = Ti.Platform.osname === 'android', jsOAuth = require('lib/jsOAuth-1.3.3');
+	var K = function(){}, isAndroid = Ti.Platform.osname === 'android', jsOAuth = require('jsOAuth-1.3.3');
 
 	var Foursquare = function(options) {
 		var self;
