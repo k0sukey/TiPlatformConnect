@@ -2,8 +2,17 @@
 * Replaced jsOAuth-1.3.3
 * twitter.js using jsOAuth.getAccessTokenKey() and jsOAuth.getAccessTokenSecret()
 * Added tumblr.js using OAuth(not XAuth). Dose not change how to use twitter.js
+* Added foursquare.js. Dose not change how to use twitter.js
 
-```
+## tumblr.js
+
+Required default callback URL in Tumblr application setting page. No need to in the library properties.
+
+## foursquare.js
+
+Required callback url in Foursquare application setting page. Need to in the library properties.
+
+## The following original twitter-titanium message
 twitter-titanium is a client-side Twitter library for Titanium Mobile. It simplifies the task of authenticating a user via Twitter. A backend is not required.
 It's designed to emulate the API of the Facebook module included in Titanium Mobile.
 
