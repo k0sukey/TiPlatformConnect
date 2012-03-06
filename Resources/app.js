@@ -46,7 +46,7 @@
 
 	var twitterLabel = Ti.UI.createLabel({
 		left: 10,
-		text: 'Sign in width Twitter'
+		text: 'Sign in with Twitter'
 	});
 	twitterRow.add(twitterLabel);
 
@@ -97,7 +97,7 @@
 
 	var tumblrLabel = Ti.UI.createLabel({
 		left: 10,
-		text: 'Sign in width Tumblr'
+		text: 'Sign in with Tumblr'
 	});
 	tumblrRow.add(tumblrLabel);
 
@@ -148,7 +148,7 @@
 
 	var flickrLabel = Ti.UI.createLabel({
 		left: 10,
-		text: 'Sign in width Flickr'
+		text: 'Sign in with Flickr'
 	});
 	flickrRow.add(flickrLabel);
 
@@ -187,7 +187,7 @@
 
 	var foursquareLabel = Ti.UI.createLabel({
 		left: 10,
-		text: 'Sign in width Foursquare'
+		text: 'Sign in with Foursquare'
 	});
 	foursquareRow.add(foursquareLabel);
 
