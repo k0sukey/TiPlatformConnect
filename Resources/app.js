@@ -8,14 +8,14 @@
 			accessTokenSecret: Ti.App.Properties.getString('twitterAccessTokenSecret')
 		});
 
-	var tumblr = require('tumblr').tumblr({
+	var tumblr = require('tumblr').Tumblr({
 			consumerKey: 'INSERT KEY HERE',
 			consumerSecret: 'INSERT SECRET HERE',
 			accessTokenKey: Ti.App.Properties.getString('tumblrAccessTokenKey'),
 			accessTokenSecret: Ti.App.Properties.getString('tumblrAccessTokenSecret')
 		});
 
-	var flickr = require('flickr').flickr({
+	var flickr = require('flickr').Flickr({
 			consumerKey: 'INSERT KEY HERE',
 			consumerSecret: 'INSERT SECRET HERE',
 			accessTokenKey: Ti.App.Properties.getString('flickrAccessTokenKey'),
@@ -23,7 +23,7 @@
 			callbackUrl: 'http://www.example.com/flickrcallback'
 		});
 
-	var foursquare = require('foursquare').foursquare({
+	var foursquare = require('foursquare').Foursquare({
 			consumerKey: 'INSERT KEY HERE',
 			consumerSecret: 'INSERT SECRET HERE',
 			accessTokenKey: Ti.App.Properties.getString('foursquareAccessTokenKey'),
@@ -42,11 +42,11 @@
 		touchEnabled: false,
 		selectionStyle: Ti.UI.iPhone.TableViewCellSelectionStyle.NONE
 	});
-	rows.add(twitterRow);
+	rows.push(twitterRow);
 
 	var twitterLabel = Ti.UI.createLabel({
 		left: 10,
-		text: 'Sing in width Twitter'
+		text: 'Sign in width Twitter'
 	});
 	twitterRow.add(twitterLabel);
 
@@ -93,11 +93,11 @@
 		touchEnabled: false,
 		selectionStyle: Ti.UI.iPhone.TableViewCellSelectionStyle.NONE
 	});
-	rows.add(tumblrRow);
+	rows.push(tumblrRow);
 
 	var tumblrLabel = Ti.UI.createLabel({
 		left: 10,
-		text: 'Sing in width Tumblr'
+		text: 'Sign in width Tumblr'
 	});
 	tumblrRow.add(tumblrLabel);
 
@@ -144,11 +144,11 @@
 		touchEnabled: false,
 		selectionStyle: Ti.UI.iPhone.TableViewCellSelectionStyle.NONE
 	});
-	rows.add(flickrRow);
+	rows.push(flickrRow);
 
 	var flickrLabel = Ti.UI.createLabel({
 		left: 10,
-		text: 'Sing in width Flickr'
+		text: 'Sign in width Flickr'
 	});
 	flickrRow.add(flickrLabel);
 
@@ -183,11 +183,11 @@
 		touchEnabled: false,
 		selectionStyle: Ti.UI.iPhone.TableViewCellSelectionStyle.NONE
 	});
-	rows.add(foursquareRow);
+	rows.push(foursquareRow);
 
 	var foursquareLabel = Ti.UI.createLabel({
 		left: 10,
-		text: 'Sing in width Foursquare'
+		text: 'Sign in width Foursquare'
 	});
 	foursquareRow.add(foursquareLabel);
 
