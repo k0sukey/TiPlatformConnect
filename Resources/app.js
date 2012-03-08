@@ -2,21 +2,21 @@
 	Ti.Facebook.appid = 'XXXXXXXXXXXXXXX';
 	Ti.Facebook.permissions = [ 'publish_stream' , 'offline_access' ];
 
-	var twitter = require('lib/twitter').Twitter({
+	var twitter = require('twitter').Twitter({
 		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
 		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
 		accessTokenKey: Ti.App.Properties.getString('twitterAccessTokenKey'),
 		accessTokenSecret: Ti.App.Properties.getString('twitterAccessTokenSecret')
 	});
 
-	var tumblr = require('lib/tumblr').Tumblr({
+	var tumblr = require('tumblr').Tumblr({
 		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
 		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
 		accessTokenKey: Ti.App.Properties.getString('tumblrAccessTokenKey'),
 		accessTokenSecret: Ti.App.Properties.getString('tumblrAccessTokenSecret')
 	});
 
-	var flickr = require('lib/flickr').Flickr({
+	var flickr = require('flickr').Flickr({
 		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
 		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
 		accessTokenKey: Ti.App.Properties.getString('flickrAccessTokenKey'),
@@ -24,7 +24,7 @@
 		callbackUrl: 'http://tipc.k0suke.be/flickr'
 	});
 
-	var foursquare = require('lib/foursquare').Foursquare({
+	var foursquare = require('foursquare').Foursquare({
 		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
 		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
 		accessTokenKey: Ti.App.Properties.getString('foursquareAccessTokenKey'),
