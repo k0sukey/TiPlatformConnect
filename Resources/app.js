@@ -21,14 +21,14 @@
 		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
 		accessTokenKey: Ti.App.Properties.getString('flickrAccessTokenKey'),
 		accessTokenSecret: Ti.App.Properties.getString('flickrAccessTokenSecret'),
-		callbackUrl: 'http://tipc.k0suke.be/flickr'
+		callbackUrl: 'http://www.example.com/callback/flickr'
 	});
 
 	var foursquare = require('foursquare').Foursquare({
 		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
 		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
 		accessTokenKey: Ti.App.Properties.getString('foursquareAccessTokenKey'),
-		callbackUrl: 'http://tipc.k0suke.be/foursquare'
+		callbackUrl: 'http://www.example.com/callback/foursquare'
 	});
 
 	var window = Ti.UI.createWindow({
