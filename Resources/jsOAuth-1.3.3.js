@@ -386,6 +386,9 @@ exports.OAuth = (function (global) {
                         }
                         var responseObject = {text: xhr.responseText, xml: (includeXML ? xhr.responseXML : ''), requestHeaders: requestHeaders, responseHeaders: responseHeaders};
 
+Ti.API.info(responseObject);
+Ti.API.info(responseHeaders);
+
                         // we are powerless against 3xx redirects
                         if((xhr.status >= 200 && xhr.status <= 226) || xhr.status == 304 || xhr.status === 0) {
                             success(responseObject);
@@ -445,6 +448,8 @@ exports.OAuth = (function (global) {
                         if (!('Content-Type' in headers)) {
                             headers['Content-Type'] = 'text/plain';
                         }
+                    } else if (typeof global.Titanium !== 'undefined') {
+                        query = data;
                     } else {
                         for(i in data) {
                             query.push(OAuth.urlEncode(i) + '=' + OAuth.urlEncode(data[i] + ''));
@@ -472,7 +477,6 @@ exports.OAuth = (function (global) {
                 for (i in headers) {
                     xhr.setRequestHeader(i, headers[i]);
                 }
-
                 xhr.send(query);
             };
 

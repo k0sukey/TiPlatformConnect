@@ -1,6 +1,6 @@
 var exports = exports || this;
 exports.Tumblr = (function(global){
-	var K = function(){}, isAndroid = Ti.Platform.osname === "android", jsOAuth = require('jsOAuth-1.3.3');
+	var K = function(){}, isAndroid = Ti.Platform.osname === 'android', jsOAuth = require('jsOAuth-1.3.3');
 
 	var Tumblr = function(options) {
 		var self;
@@ -73,7 +73,7 @@ exports.Tumblr = (function(global){
 			webViewWindow.close();
 			self.fireEvent('cancel', {
 				success: false,
-				error: "The user cancelled.",
+				error: 'The user cancelled.',
 				result: null
 			});
 		});
@@ -103,10 +103,10 @@ exports.Tumblr = (function(global){
 						webViewWindow.close();
 					}
 
-	                var verifier = oauth.parseTokenRequest({ text: event.url.split('?')[1] }, undefined);
+					var verifier = oauth.parseTokenRequest({ text: event.url.split('?')[1] }, undefined);
 
 					oauth.post('http://www.tumblr.com/oauth/access_token', verifier, function(e){
-						var token = self.oauthClient.parseTokenRequest(e, e.responseHeaders['Content-Type'] || undefined);
+						var token = oauth.parseTokenRequest(e, e.responseHeaders['Content-Type'] || undefined);
 		                oauth.setAccessToken([ token.oauth_token, token.oauth_token_secret ]);
 
 						self.fireEvent('login', {
@@ -122,7 +122,7 @@ exports.Tumblr = (function(global){
 					}, function(e){
 						self.fireEvent('login', {
 							success: false,
-							error: "Failure to fetch access token, please try again.",
+							error: 'Failure to fetch access token, please try again.',
 							result: data
 						});
 					});
@@ -153,6 +153,7 @@ exports.Tumblr = (function(global){
 		} else {
 			createAuthWindow.call(this);
 
+			this.oauthClient.setAccessToken('', '');
 			this.oauthClient.post(this.oauthClient.requestTokenUrl, {}, function(e){
 				var token = self.oauthClient.parseTokenRequest(e, e.responseHeaders['Content-Type'] || undefined);
 				self.oauthClient.setAccessToken([token.oauth_token, token.oauth_token_secret]);
@@ -160,7 +161,7 @@ exports.Tumblr = (function(global){
 			}, function(e){
 				self.fireEvent('login', {
 					success: false,
-					error: "Failure to fetch access token, please try again.",
+					error: 'Failure to fetch access token, please try again.',
 					result: e
 				});
 			});
@@ -168,12 +169,19 @@ exports.Tumblr = (function(global){
 	};
 
 	Tumblr.prototype.request = function(path, params, httpVerb, callback){
-		var self = this, oauth = this.oauthClient, url = "http://api.tumblr.com/" + path;
+		var self = this, oauth = this.oauthClient, url = 'http://api.tumblr.com/' + path, headers = {};
+
+		if (params.photos) {
+			headers = {
+				'Content-Type': 'multipart/form-data'
+			};
+		}
 
 		oauth.request({
 			method: httpVerb,
 			url: url,
 			data: params,
+			headers: headers,
 			success: function(data){
 				callback.call(self, {
 					success: true,
@@ -184,7 +192,7 @@ exports.Tumblr = (function(global){
 			error: function(data){
 				callback.call(self, {
 					success: false,
-					error: "Request failed",
+					error: 'Request failed',
 					result: data
 				});
 			}

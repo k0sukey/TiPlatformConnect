@@ -174,12 +174,19 @@ exports.Flickr = (function(global){
 	};
 
 	Flickr.prototype.request = function(path, params, httpVerb, callback){
-		var self = this, oauth = this.oauthClient, url = 'http://api.flickr.com/' + path;
+		var self = this, oauth = this.oauthClient, url = 'http://api.flickr.com/' + path, headers = {};
+
+		if (params.photos) {
+			headers = {
+				'Content-Type': 'multipart/form-data'
+			};
+		}
 
 		oauth.request({
 			method: httpVerb,
 			url: url,
 			data: params,
+			headers: headers,
 			success: function(data){
 				callback.call(self, {
 					success: true,
@@ -210,8 +217,16 @@ exports.Flickr = (function(global){
 		}
 	};
 
+	Flickr.prototype.setUserNsid = function(user_nsid){
+		this.user_nsid = user_nsid;
+	};
+
 	Flickr.prototype.getUserNsid = function(){
 		return this.user_nsid;
+	};
+
+	Flickr.prototype.setUsername = function(username){
+		this.username = username;
 	};
 
 	Flickr.prototype.getUsername = function(){

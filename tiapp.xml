@@ -37,5 +37,6 @@
     </iphone>
     <property name="ti.android.threadstacksize" type="int">32768</property>
     <android xmlns:android="http://schemas.android.com/apk/res/android"/>
+    <property name="ti.facebook.appid">XXXXXXXXXXXXXXX</property>
     <modules/>
 </ti:app>

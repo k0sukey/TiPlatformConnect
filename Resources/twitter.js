@@ -144,9 +144,7 @@ exports.Twitter = (function(global) {
             self.fireEvent('login', {
               success: true,
               error: false,
-//              accessTokenKey: returnedParams.oauth_token,
               accessTokenKey: oauth.getAccessTokenKey(),
-//              accessTokenSecret: returnedParams.oauth_token_secret
               accessTokenSecret: oauth.getAccessTokenSecret()
             });
             self.authorized = true;
@@ -215,12 +213,19 @@ exports.Twitter = (function(global) {
    * @param {Function} callback
    */
   Twitter.prototype.request = function(path, params, httpVerb, callback) {
-    var self = this, oauth = this.oauthClient, url = "https://api.twitter.com/" + path;
-    
+    var self = this, oauth = this.oauthClient, url = (params['media[]'] ? "https://upload.twitter.com/" : "https://api.twitter.com/") + path, headers = {};
+
+    if (params['media[]']) {
+        headers = {
+            'Content-Type': 'multipart/form-data'
+        };
+    }
+
     oauth.request({
       method: httpVerb,
       url: url,
       data: params,
+      headers: headers,
       success: function(data) {
         callback.call(self, {
           success: true,

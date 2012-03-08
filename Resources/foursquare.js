@@ -201,6 +201,5 @@ exports.Foursquare = (function(global){
 		}
 	};
 
-
 	return Foursquare;
 })(this);
