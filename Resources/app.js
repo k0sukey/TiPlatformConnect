@@ -146,11 +146,7 @@
 				params.venueId = place.id;
 				params.shout = captionTextField.value;
 				params.ll = place.latitude + ',' + place.logitude;
-//				params.broadcast = 'public';
-
-				if (photoImageView.image) {
-				} else {
-				}
+				params.broadcast = 'public';
 
 				foursquare.request(path, params, 'POST', function(e){
 					if (e.success) {
