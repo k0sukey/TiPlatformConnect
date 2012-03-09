@@ -5,29 +5,29 @@
 	var twitter = require('twitter').Twitter({
 		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
 		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
-		accessTokenKey: Ti.App.Properties.getString('twitterAccessTokenKey'),
-		accessTokenSecret: Ti.App.Properties.getString('twitterAccessTokenSecret')
+		accessTokenKey: Ti.App.Properties.getString('twitterAccessTokenKey', ''),
+		accessTokenSecret: Ti.App.Properties.getString('twitterAccessTokenSecret', '')
 	});
 
 	var tumblr = require('tumblr').Tumblr({
 		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
 		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
-		accessTokenKey: Ti.App.Properties.getString('tumblrAccessTokenKey'),
-		accessTokenSecret: Ti.App.Properties.getString('tumblrAccessTokenSecret')
+		accessTokenKey: Ti.App.Properties.getString('tumblrAccessTokenKey', ''),
+		accessTokenSecret: Ti.App.Properties.getString('tumblrAccessTokenSecret', '')
 	});
 
 	var flickr = require('flickr').Flickr({
 		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
 		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
-		accessTokenKey: Ti.App.Properties.getString('flickrAccessTokenKey'),
-		accessTokenSecret: Ti.App.Properties.getString('flickrAccessTokenSecret'),
+		accessTokenKey: Ti.App.Properties.getString('flickrAccessTokenKey', ''),
+		accessTokenSecret: Ti.App.Properties.getString('flickrAccessTokenSecret', ''),
 		callbackUrl: 'http://www.example.com/callback/flickr'
 	});
 
 	var foursquare = require('foursquare').Foursquare({
 		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
 		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
-		accessTokenKey: Ti.App.Properties.getString('foursquareAccessTokenKey'),
+		accessTokenKey: Ti.App.Properties.getString('foursquareAccessTokenKey', ''),
 		callbackUrl: 'http://www.example.com/callback/foursquare'
 	});
 
