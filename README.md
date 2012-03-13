@@ -1,10 +1,12 @@
 # TiPlatformConnect (forked twitter-titanium)
-* Replaced jsOAuth-1.3.1.js to jsOAuth-1.3.3.js, and customize for Titanium Mobile
+* Replaced jsOAuth-1.3.1.js to jsOAuth-1.3.3.js, and customize for Titanium Mobile(Content-Type, Ti.Network.createHTTPClient())
 * twitter.js using jsOAuth.getAccessTokenKey() and jsOAuth.getAccessTokenSecret(), and update_with_media support!
-* Added tumblr.js using OAuth(not XAuth). Photo upload yet... Dose not change how to use twitter.js
-* Added foursquare.js. In development... Dose not change how to use twitter.js
-* Added flickr.js. In development... Dose not change how to use twitter.js, and extend getUserNsid(), getUsername().
+* Added tumblr.js using OAuth(not XAuth). Photo upload yet...
+* Added mixi.js
+* Added foursquare.js
+* Added flickr.js. In development...
 * Rewrite the app.js
+* Extend platform.request(path, params, headers, httpVerb, callback); path is replaced url possible. Added headers.
 
 ## How to use
 
@@ -17,6 +19,10 @@ update_with_media support!
 ## tumblr.js
 
 Required default callback URL in Tumblr application setting page. No need to in the library properties.
+
+## mixi.js
+
+Required callback url in the library properties. Required access token refresh(only mixi.js), how to Resouces/app.js.
 
 ## foursquare.js
 
