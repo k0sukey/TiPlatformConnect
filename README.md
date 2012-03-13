@@ -10,6 +10,10 @@
 
 See Resouces/app.js
 
+## twitter.js
+
+update_with_media support!
+
 ## tumblr.js
 
 Required default callback URL in Tumblr application setting page. No need to in the library properties.

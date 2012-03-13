@@ -3,22 +3,22 @@
 	Ti.Facebook.permissions = [ 'publish_stream' , 'offline_access' ];
 
 	var twitter = require('twitter').Twitter({
-		consumerKey: 'XXXXXXXXXXXXXXX',
-		consumerSecret: 'XXXXXXXXXXXXXXX',
+		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
+		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
 		accessTokenKey: Ti.App.Properties.getString('twitterAccessTokenKey', ''),
 		accessTokenSecret: Ti.App.Properties.getString('twitterAccessTokenSecret', '')
 	});
 
 	var tumblr = require('tumblr').Tumblr({
-		consumerKey: 'XXXXXXXXXXXXXXX',
-		consumerSecret: 'XXXXXXXXXXXXXXX',
+		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
+		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
 		accessTokenKey: Ti.App.Properties.getString('tumblrAccessTokenKey', ''),
 		accessTokenSecret: Ti.App.Properties.getString('tumblrAccessTokenSecret', '')
 	});
 
 	var mixi = require('mixi').Mixi({
-		consumerKey: 'XXXXXXXXXXXXXXX',
-		consumerSecret: 'XXXXXXXXXXXXXXX',
+		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
+		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
 		accessTokenKey: Ti.App.Properties.getString('mixiAccessTokenKey', ''),
 		refreshTokenKey: Ti.App.Properties.getString('mixiRefreshTokenKey', ''),
 		callbackUrl: 'http://www.example.com/callback/mixi',
@@ -30,16 +30,23 @@
 	});
 
 	var flickr = require('flickr').Flickr({
-		consumerKey: 'XXXXXXXXXXXXXXX',
-		consumerSecret: 'XXXXXXXXXXXXXXX',
+		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
+		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
+		accessTokenKey: Ti.App.Properties.getString('tumblrAccessTokenKey', ''),
+		accessTokenSecret: Ti.App.Properties.getString('tumblrAccessTokenSecret', '')
+	});
+
+	var flickr = require('flickr').Flickr({
+		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
+		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
 		accessTokenKey: Ti.App.Properties.getString('flickrAccessTokenKey', ''),
 		accessTokenSecret: Ti.App.Properties.getString('flickrAccessTokenSecret', ''),
 		callbackUrl: 'http://www.example.com/callback/flickr'
 	});
 
 	var foursquare = require('foursquare').Foursquare({
-		consumerKey: 'XXXXXXXXXXXXXXX',
-		consumerSecret: 'XXXXXXXXXXXXXXX',
+		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
+		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
 		accessTokenKey: Ti.App.Properties.getString('foursquareAccessTokenKey', ''),
 		callbackUrl: 'http://www.example.com/callback/foursquare'
 	});
