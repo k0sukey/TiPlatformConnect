@@ -164,13 +164,20 @@ exports.Foursquare = (function(global){
 		}
 	};
 
-	Foursquare.prototype.request = function(path, params, httpVerb, callback){
-		var self = this, oauth = this.oauthClient, url = 'https://api.foursquare.com/' + path + '?oauth_token=' + this.oauthClient.getAccessTokenKey();
+	Foursquare.prototype.request = function(path, params, headers, httpVerb, callback){
+		var self = this, oauth = this.oauthClient, url;
+
+		if (path.match(/^https?:\/\/.+/i)) {
+			url = path;
+		} else {
+			url = 'https://api.foursquare.com/' + path;
+		}
 
 		oauth.request({
 			method: httpVerb,
-			url: url,
+			url: url + '?oauth_token=' + this.oauthClient.getAccessTokenKey(),
 			data: params,
+			headers: headers,
 			success: function(data){
 				callback.call(self, {
 					success: true,

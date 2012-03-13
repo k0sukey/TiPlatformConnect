@@ -3,31 +3,44 @@
 	Ti.Facebook.permissions = [ 'publish_stream' , 'offline_access' ];
 
 	var twitter = require('twitter').Twitter({
-		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
-		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
-		accessTokenKey: Ti.App.Properties.getString('twitterAccessTokenKey'),
-		accessTokenSecret: Ti.App.Properties.getString('twitterAccessTokenSecret')
+		consumerKey: 'XXXXXXXXXXXXXXX',
+		consumerSecret: 'XXXXXXXXXXXXXXX',
+		accessTokenKey: Ti.App.Properties.getString('twitterAccessTokenKey', ''),
+		accessTokenSecret: Ti.App.Properties.getString('twitterAccessTokenSecret', '')
 	});
 
 	var tumblr = require('tumblr').Tumblr({
-		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
-		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
-		accessTokenKey: Ti.App.Properties.getString('tumblrAccessTokenKey'),
-		accessTokenSecret: Ti.App.Properties.getString('tumblrAccessTokenSecret')
+		consumerKey: 'XXXXXXXXXXXXXXX',
+		consumerSecret: 'XXXXXXXXXXXXXXX',
+		accessTokenKey: Ti.App.Properties.getString('tumblrAccessTokenKey', ''),
+		accessTokenSecret: Ti.App.Properties.getString('tumblrAccessTokenSecret', '')
+	});
+
+	var mixi = require('mixi').Mixi({
+		consumerKey: 'XXXXXXXXXXXXXXX',
+		consumerSecret: 'XXXXXXXXXXXXXXX',
+		accessTokenKey: Ti.App.Properties.getString('mixiAccessTokenKey', ''),
+		refreshTokenKey: Ti.App.Properties.getString('mixiRefreshTokenKey', ''),
+		callbackUrl: 'http://www.example.com/callback/mixi',
+		scope: 'r_profile w_voice'
+	});
+
+	mixi.addEventListener('refresh', function(e){
+		Ti.API.info(e);
 	});
 
 	var flickr = require('flickr').Flickr({
-		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
-		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
-		accessTokenKey: Ti.App.Properties.getString('flickrAccessTokenKey'),
-		accessTokenSecret: Ti.App.Properties.getString('flickrAccessTokenSecret'),
+		consumerKey: 'XXXXXXXXXXXXXXX',
+		consumerSecret: 'XXXXXXXXXXXXXXX',
+		accessTokenKey: Ti.App.Properties.getString('flickrAccessTokenKey', ''),
+		accessTokenSecret: Ti.App.Properties.getString('flickrAccessTokenSecret', ''),
 		callbackUrl: 'http://www.example.com/callback/flickr'
 	});
 
 	var foursquare = require('foursquare').Foursquare({
-		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
-		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
-		accessTokenKey: Ti.App.Properties.getString('foursquareAccessTokenKey'),
+		consumerKey: 'XXXXXXXXXXXXXXX',
+		consumerSecret: 'XXXXXXXXXXXXXXX',
+		accessTokenKey: Ti.App.Properties.getString('foursquareAccessTokenKey', ''),
 		callbackUrl: 'http://www.example.com/callback/foursquare'
 	});
 
@@ -50,13 +63,15 @@
 		} else {
 			var path;
 			var params = {};
+			var headers = {};
 
 			if (twitter.authorized && twitterSwitch.value) {
 				params.status = captionTextField.value;
 
 				if (photoImageView.image) {
-					path = '1/statuses/update_with_media.json';
+					path = 'https://upload.twitter.com/1/statuses/update_with_media.json';
 					params['media[]'] = photoImageView.toBlob();
+					headers = { 'Content-Type': 'multipart/form-data' };
 				} else {
 					path = '1/statuses/update.json';
 				}
@@ -66,7 +81,7 @@
 					params.long = place.longitude;
 				}
 
-				twitter.request(path, params, 'POST', function(e){
+				twitter.request(path, params, headers, 'POST', function(e){
 					if (e.success) {
 						// success proc...
 					} else {
@@ -75,9 +90,9 @@
 				});
 			}
 
-			params = {};
-
 			if (Ti.Facebook.getLoggedIn() && facebookSwitch.value) {
+				params = {};
+
 				if (photoImageView.image) {
 					path = 'me/photos';
 					params.name = captionTextField.value;
@@ -99,9 +114,10 @@
 				});
 			}
 
-			params = {};
-
 			if (tumblr.authorized && tumblrSwitch.value && tumblrBlog.name && tumblrBlog.title) {
+				params = {};
+				headers = {};
+
 				path = 'v2/blog/' + tumblrBlog.name + '.tumblr.com/post';
 				params.tweet = 'off';
 
@@ -109,12 +125,13 @@
 					params.type = 'photo';
 					params.data = photoImageView.toBlob();
 					params.caption = captionTextField.value;
+					headers = { 'Content-Type': 'multipart/form-data' };
 				} else {
 					params.type = 'text';
 					params.body = captionTextField.value;
 				}
 
-				tumblr.request(path, params, 'POST', function(e){
+				tumblr.request(path, params, headers, 'POST', function(e){
 					if (e.success) {
 						// success proc...
 					} else {
@@ -123,14 +140,37 @@
 				});
 			}
 
-			params = {};
+			if (mixi.authorized && mixiSwitch.value) {
+				params = {};
+				headers = {};
+
+				path = '2/voice/statuses/update';
+				params.status = captionTextField.value;
+
+				if (photoImageView.image) {
+					params.photo = photoImageView.toBlob();
+					headers = { 'Content-Type': 'multipart/form-data' };
+				}
+
+				mixi.request(path, params, headers, 'POST', function(e){
+					if (e.success) {
+						// success proc...
+					} else {
+						// error proc...
+					}
+				});
+			}
 
 			if (flickr.authorized && flickrSwitch.value && photoImageView.image) {
-				path = 'services/upload/';
-				params.photo = photoImageView.image;
-				params.description = captionTextField.value;
+				params = {};
+				headers = {};
 
-				flickr.request(path, params, 'POST', function(e){
+				path = 'services/upload/';
+				params.photo = photoImageView.toBlob();
+				params.description = captionTextField.value;
+				headers = { 'Content-Type': 'multipart/form-data' };
+
+				flickr.request(path, params, headers, 'POST', function(e){
 					if (e.success) {
 						// success proc...
 					} else {
@@ -139,16 +179,17 @@
 				});
 			}
 
-			params = {};
-
 			if (foursquare.authorized && foursquareSwitch.value && place.id && place.name && place.latitude && place.longitude) {
+				params = {};
+				headers = {};
+
 				path = 'v2/checkins/add';
 				params.venueId = place.id;
 				params.shout = captionTextField.value;
-				params.ll = place.latitude + ',' + place.logitude;
+				params.ll = place.latitude + ',' + place.longitude;
 				params.broadcast = 'public';
 
-				foursquare.request(path, params, 'POST', function(e){
+				foursquare.request(path, params, headers, 'POST', function(e){
 					if (e.success) {
 						// success proc...
 					} else {
@@ -319,7 +360,7 @@
 						longitudeDelta: 0.005
 					};
 
-					foursquare.request('v2/venues/search', { ll: e.coords.latitude + ',' + e.coords.longitude }, 'GET', function(e){
+					foursquare.request('v2/venues/search', { ll: e.coords.latitude + ',' + e.coords.longitude }, {}, 'GET', function(e){
 						if (e.success) {
 							var json = JSON.parse(e.result.text);
 
@@ -392,11 +433,11 @@
 
 	var twitterAuthorize = function(event){
 		twitter.addEventListener('login', function(e){
-			Ti.App.Properties.setString('twitterAccessTokenKey', e.accessTokenKey);
-			Ti.App.Properties.setString('twitterAccessTokenSecret', e.accessTokenSecret);
-
 			if (e.success) {
-				twitter.request('1/account/verify_credentials.json', {}, 'GET', function(e){
+				Ti.App.Properties.setString('twitterAccessTokenKey', e.accessTokenKey);
+				Ti.App.Properties.setString('twitterAccessTokenSecret', e.accessTokenSecret);
+
+				twitter.request('1/account/verify_credentials.json', {}, {}, 'GET', function(e){
 					if (e.success) {
 						var json = JSON.parse(e.result.text);
 
@@ -469,7 +510,7 @@
 
 	Ti.Facebook.addEventListener('login', function(e) {
 		if (e.success) {
-			Ti.Facebook.requestWithGraphPath('me', {}, 'GET', function(e){
+			Ti.Facebook.requestWithGraphPath('me', {}, {}, 'GET', function(e){
 				if (e.success) {
 					var json = JSON.parse(e.result);
 					facebookLabel.setText(json.name + ' on Facebook');
@@ -506,15 +547,15 @@
 		Ti.App.Properties.setBool('tumblrShareSwitch', e.value);
 	});
 
-	var tumblrBlog = {};
+	var tumblrBlog = JSON.parse(Ti.App.Properties.getString('tumblrBlog', '{}'));
 
 	var tumblrAuthorize = function(event){
 		tumblr.addEventListener('login', function(e){
-			Ti.App.Properties.setString('tumblrAccessTokenKey', e.accessTokenKey);
-			Ti.App.Properties.setString('tumblrAccessTokenSecret', e.accessTokenSecret);
-
 			if (e.success) {
-				tumblr.request('v2/user/info', {}, 'POST', function(e){
+				Ti.App.Properties.setString('tumblrAccessTokenKey', e.accessTokenKey);
+				Ti.App.Properties.setString('tumblrAccessTokenSecret', e.accessTokenSecret);
+
+				tumblr.request('v2/user/info', {}, {}, 'POST', function(e){
 					if (e.success) {
 						var json = JSON.parse(e.result.text);
 
@@ -561,6 +602,7 @@
 									name: e.rowData.name,
 									title: e.rowData.blogTitle
 								};
+								Ti.App.Properties.setString('tumblrBlog', JSON.stringify(tumblrBlog));
 								tumblrBlogWindow.close();
 							});
 
@@ -596,7 +638,7 @@
 							color: '#666',
 							font: { fontSize: 12 },
 							textAlign: 'right',
-							text: ''
+							text: JSON.parse(Ti.App.Properties.getString('tumblrBlog', '{}')).title
 						});
 						tumblrBlogRow.add(chooseLabel);
 
@@ -625,6 +667,75 @@
 		tumblrRow.addEventListener('click', tumblrAuthorize);
 	}
 
+	var mixiRow = Ti.UI.createTableViewRow({
+		touchEnabled: false,
+		selectionStyle: Ti.UI.iPhone.TableViewCellSelectionStyle.NONE
+	});
+	platformSection.add(mixiRow);
+
+	var mixiLabel = Ti.UI.createLabel({
+		left: 10,
+		text: 'Sign in with Mixi'
+	});
+	mixiRow.add(mixiLabel);
+
+	var mixiSwitch = Ti.UI.createSwitch({
+		right: 10,
+		value: Ti.App.Properties.getBool('mixiShareSwitch', true)
+	});
+	mixiSwitch.addEventListener('change', function(e){
+		Ti.App.Properties.setBool('mixiShareSwitch', e.value);
+	});
+
+	var mixiAuthorize = function(event){
+		mixi.addEventListener('login', function(e){
+			if (e.success) {
+				Ti.App.Properties.setString('mixiAccessTokenKey', e.accessTokenKey);
+				Ti.App.Properties.setString('mixiRefreshTokenKey', e.refreshTokenKey);
+
+				var expiresIn = e.expiresIn;
+				mixi.request('2/people/@me/@self', { format: 'json' }, {}, 'GET', function(e){
+					if (e.success) {
+						var json = JSON.parse(e.result.text);
+
+						mixiLabel.setText(json.entry.displayName + ' on Mixi');
+						mixiRow.add(mixiSwitch);
+						mixiRow.touchEnabled = false;
+						mixiRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.NONE;
+
+						if (event) {
+							mixiRow.removeEventListener('click', mixiAuthorize);
+						}
+
+						setInterval(function(){
+							mixi.refreshAccessToken();
+						}, expiresIn * 0.9 * 1000);
+					} else {
+						// error proc...
+					}
+				});
+			} else {
+				mixiRow.touchEnabled = true;
+				mixiRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.BLUE;
+				mixiCallback = true;
+
+				mixiRow.addEventListener('click', mixiAuthorize);
+			}
+		});
+
+		mixi.authorize();
+	};
+
+	if (mixi.authorized) {
+		mixiAuthorize();
+	} else {
+		mixiRow.touchEnabled = true;
+		mixiRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.BLUE;
+		mixiCallback = true;
+
+		mixiRow.addEventListener('click', mixiAuthorize);
+	}
+
 	var flickrRow = Ti.UI.createTableViewRow({
 		touchEnabled: false,
 		selectionStyle: Ti.UI.iPhone.TableViewCellSelectionStyle.NONE
@@ -647,28 +758,28 @@
 
 	var flickrAuthorize = function(event){
 		flickr.addEventListener('login', function(e){
-			Ti.App.Properties.setString('flickrAccessTokenKey', e.accessTokenKey);
-			Ti.App.Properties.setString('flickrAccessTokenSecret', e.accessTokenSecret);
+			if (e.success) {
+				Ti.App.Properties.setString('flickrAccessTokenKey', e.accessTokenKey);
+				Ti.App.Properties.setString('flickrAccessTokenSecret', e.accessTokenSecret);
 
-			if (flickr.getUserNsid()) {
-				Ti.App.Properties.setString('flickrUserNsid', flickr.getUserNsid());
+				flickr.request('services/rest', { nojsoncallback: 1, format: 'json', method: 'flickr.test.login' }, {}, 'GET', function(e){
+					if (e.success) {
+						var json = JSON.parse(e.result.text);
+
+						flickrLabel.setText(json.user.username._content + ' on Flickr');
+						flickrRow.add(flickrSwitch);
+						flickrRow.touchEnabled = false;
+						flickrRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.NONE;
+
+						if (event) {
+							flickrRow.removeEventListener('click', flickrAuthorize);
+						}
+					} else {
+						// error proc...
+					}
+				});
 			} else {
-				flickr.setUserNsid(Ti.App.Properties.getString('flickrUserNsid'));
-			}
-
-			if (flickr.getUsername()) {
-				Ti.App.Properties.setString('flickrUsername', flickr.getUsername());
-			} else {
-				flickr.setUsername(Ti.App.Properties.getString('flickrUsername'));
-			}
-
-			flickrLabel.setText(Ti.App.Properties.getString('flickrUsername') + ' on Flickr');
-			flickrRow.add(flickrSwitch);
-			flickrRow.touchEnabled = false;
-			flickrRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.NONE;
-
-			if (event) {
-				flickrRow.removeEventListener('click', flickrAuthorize);
+				// error proc…
 			}
 		});
 
@@ -707,10 +818,10 @@
 
 	var foursquareAuthorize = function(event){
 		foursquare.addEventListener('login', function(e){
-			Ti.App.Properties.setString('foursquareAccessTokenKey', e.accessTokenKey);
-
 			if (e.success) {
-				foursquare.request('v2/users/self', {}, 'GET', function(e){
+				Ti.App.Properties.setString('foursquareAccessTokenKey', e.accessTokenKey);
+
+				foursquare.request('v2/users/self', {}, {}, 'GET', function(e){
 					if (e.success) {
 						var json = JSON.parse(e.result.text);
 

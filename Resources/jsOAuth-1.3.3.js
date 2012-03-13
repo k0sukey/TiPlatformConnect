@@ -386,9 +386,6 @@ exports.OAuth = (function (global) {
                         }
                         var responseObject = {text: xhr.responseText, xml: (includeXML ? xhr.responseXML : ''), requestHeaders: requestHeaders, responseHeaders: responseHeaders};
 
-Ti.API.info(responseObject);
-Ti.API.info(responseHeaders);
-
                         // we are powerless against 3xx redirects
                         if((xhr.status >= 200 && xhr.status <= 226) || xhr.status == 304 || xhr.status === 0) {
                             success(responseObject);
@@ -396,16 +393,24 @@ Ti.API.info(responseHeaders);
                         } else if(xhr.status >= 400 && xhr.status !== 0) {
                             failure(responseObject);
                         }
+
+                        if (typeof global.Titanium !== 'undefined') {
+                            xhr.onerror = null;
+                            xhr.onload = null;
+                            xhr.onreadystatechange = null;
+                            xhr.ondatastream = null;
+                            xhr = null;
+                        }
                     }
                 };
 
                 headerParams = {
                     'oauth_callback': oauth.callbackUrl,
                     'oauth_consumer_key': oauth.consumerKey,
-                    'oauth_token': oauth.accessTokenKey,
+                    'oauth_nonce': getNonce(),
                     'oauth_signature_method': oauth.signatureMethod,
                     'oauth_timestamp': getTimestamp(),
-                    'oauth_nonce': getNonce(),
+                    'oauth_token': oauth.accessTokenKey,
                     'oauth_verifier': oauth.verifier,
                     'oauth_version': OAUTH_VERSION_1_0
                 };
@@ -471,8 +476,9 @@ Ti.API.info(responseHeaders);
                 }
 
                 xhr.open(method, url+'', true);
-
-                xhr.setRequestHeader('Authorization', 'OAuth ' + toHeaderString(headerParams));
+                if (!('Authorization' in headers)) {
+                    xhr.setRequestHeader('Authorization', 'OAuth ' + toHeaderString(headerParams));
+                }
                 xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
                 for (i in headers) {
                     xhr.setRequestHeader(i, headers[i]);

@@ -23,9 +23,6 @@ exports.Flickr = (function(global){
 		self.authorized = false;
 		self.listeners = {};
 
-		self.user_nsid = '';
-		self.username = '';
-
 		if (self.accessTokenKey && self.accessTokenSecret) {
 			self.authorized = true;
 		}
@@ -110,9 +107,6 @@ exports.Flickr = (function(global){
 						var token = oauth.parseTokenRequest(data, data.responseHeaders['Content-Type'] || undefined);
 						oauth.setAccessToken([ token.oauth_token, token.oauth_token_secret ]);
 
-						self.user_nsid = token.user_nsid;
-						self.username = token.username;
-
 						self.fireEvent('login', {
 							success: true,
 							error: false,
@@ -157,9 +151,6 @@ exports.Flickr = (function(global){
 		} else {
 			createAuthWindow.call(this);
 
-			this.user_nsid = '';
-			this.username = '';
-
 			this.oauthClient.fetchRequestToken(function(requestParams){
 				var authorizeUrl = self.authorizeUrl + requestParams;
 				self.webView.url = authorizeUrl;
@@ -173,13 +164,13 @@ exports.Flickr = (function(global){
 		}
 	};
 
-	Flickr.prototype.request = function(path, params, httpVerb, callback){
-		var self = this, oauth = this.oauthClient, url = 'http://api.flickr.com/' + path, headers = {};
+	Flickr.prototype.request = function(path, params, headers, httpVerb, callback){
+		var self = this, oauth = this.oauthClient, url;
 
-		if (params.photos) {
-			headers = {
-				'Content-Type': 'multipart/form-data'
-			};
+		if (path.match(/^https?:\/\/.+/i)) {
+			url = path;
+		} else {
+			url = 'http://api.flickr.com/' + path;
 		}
 
 		oauth.request({
@@ -215,22 +206,6 @@ exports.Flickr = (function(global){
 		for (var i = 0; i < eventListeners.length; i++) {
 			eventListeners[i].call(this, data);
 		}
-	};
-
-	Flickr.prototype.setUserNsid = function(user_nsid){
-		this.user_nsid = user_nsid;
-	};
-
-	Flickr.prototype.getUserNsid = function(){
-		return this.user_nsid;
-	};
-
-	Flickr.prototype.setUsername = function(username){
-		this.username = username;
-	};
-
-	Flickr.prototype.getUsername = function(){
-		return this.username;
 	};
 
 	return Flickr;

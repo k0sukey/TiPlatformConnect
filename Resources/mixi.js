@@ -1,39 +1,41 @@
 var exports = exports || this;
-exports.Tumblr = (function(global){
+exports.Mixi = (function(global){
 	var K = function(){}, isAndroid = Ti.Platform.osname === 'android', jsOAuth = require('jsOAuth-1.3.3');
 
-	var Tumblr = function(options) {
+	var Mixi = function(options) {
 		var self;
 
-		if (this instanceof Tumblr) {
+		if (this instanceof Mixi) {
 			self = this;
 		} else {
 			self = new K();
 		}
 
 		if (!options) { options = {}; }
-		self.windowTitle = options.windowTitle || 'Tumblr Authorization';
+		self.windowTitle = options.windowTitle || 'Mixi Authorization';
 		self.windowClose = options.windowClose || 'Close';
 		self.windowBack = options.windowBack || 'Back';
 		self.consumerKey = options.consumerKey;
 		self.consumerSecret = options.consumerSecret;
-		self.authorizeUrl = 'http://www.tumblr.com/oauth/authorize';
 		self.accessTokenKey = options.accessTokenKey;
-		self.accessTokenSecret = options.accessTokenSecret;
+		self.refreshTokenKey = options.refreshTokenKey;
+		self.scope = options.scope;
 		self.authorized = false;
 		self.listeners = {};
 
-		if (self.accessTokenKey && self.accessTokenSecret) {
+		if (self.accessTokenKey && self.refreshTokenKey) {
 			self.authorized = true;
 		}
 
-		options.requestTokenUrl = options.requestTokenUrl || 'http://www.tumblr.com/oauth/request_token';
+		self.callbackUrl = options.callbackUrl || 'oob';
+
+		options.requestTokenUrl = options.requestTokenUrl || 'https://mixi.jp/connect_authorize.pl';
 		self.oauthClient = jsOAuth.OAuth(options);
 
 		return self;
 	};
 
-	K.prototype = Tumblr.prototype;
+	K.prototype = Mixi.prototype;
 
 	function createAuthWindow() {
 		var self = this,
@@ -90,7 +92,7 @@ exports.Tumblr = (function(global){
 		});
 
 		webView.addEventListener('load', function(event){
-			if (event.url.indexOf(self.authorizeUrl) === -1) {
+			if (event.url.indexOf('?code=') !== -1) {
 				webViewWindow.remove(loadingOverlay);
 				actInd.hide();
 
@@ -98,35 +100,29 @@ exports.Tumblr = (function(global){
 					webViewWindow.leftNavButton = backButton;
 				}
 
-				if (event.url.indexOf('oauth_verifier') !== -1) {
-					if (!isAndroid) {
+				if (!isAndroid) {
+					webViewWindow.close();
+				}
+
+				oauth.post('https://secure.mixi-platform.com/2/token', { grant_type: 'authorization_code', client_id: self.consumerKey, client_secret: self.consumerSecret, code: event.url.split('?code=')[1], redirect_uri: self.callbackUrl }, function(e){
+					var json = JSON.parse(e.text);
+
+					oauth.setAccessToken([ json.access_token ]);
+					self.accessTokenKey = json.access_token;
+					self.refreshTokenKey = json.refresh_token;
+
+					self.fireEvent('login', {
+						success: true,
+						error: false,
+						accessTokenKey: oauth.getAccessTokenKey(),
+						refreshTokenKey: self.refreshTokenKey,
+						expiresIn: json.expires_in
+					});
+					self.authorized = true;
+					if (isAndroid) {
 						webViewWindow.close();
 					}
-
-					var verifier = oauth.parseTokenRequest({ text: event.url.split('?')[1] }, undefined);
-
-					oauth.post('http://www.tumblr.com/oauth/access_token', verifier, function(e){
-						var token = oauth.parseTokenRequest(e, e.responseHeaders['Content-Type'] || undefined);
-		                oauth.setAccessToken([ token.oauth_token, token.oauth_token_secret ]);
-
-						self.fireEvent('login', {
-							success: true,
-							error: false,
-							accessTokenKey: oauth.getAccessTokenKey(),
-							accessTokenSecret: oauth.getAccessTokenSecret()
-						});
-						self.authorized = true;
-						if (isAndroid) {
-							webViewWindow.close();
-						}
-					}, function(e){
-						self.fireEvent('login', {
-							success: false,
-							error: 'Failure to fetch access token, please try again.',
-							result: data
-						});
-					});
-				}
+				});
 			} else {
 				webViewWindow.remove(loadingOverlay);
 				actInd.hide();
@@ -138,44 +134,52 @@ exports.Tumblr = (function(global){
 		});
 	}
 
-	Tumblr.prototype.authorize = function(){
+	Mixi.prototype.authorize = function(){
 		var self = this;
 
 		if (this.authorized) {
-			setTimeout(function(){
+			this.oauthClient.post('https://secure.mixi-platform.com/2/token', { grant_type: 'refresh_token', client_id: this.consumerKey, client_secret: this.consumerSecret, refresh_token: this.refreshTokenKey }, function(e){
+				var json = JSON.parse(e.text);
+
+				self.oauthClient.setAccessToken([ json.access_token ]);
+				self.accessTokenKey = json.access_token;
+				self.refreshTokenKey = json.refresh_token;
+
 				self.fireEvent('login', {
 					success: true,
 					error: false,
-					accessTokenKey: self.accessTokenKey,
-					accessTokenSecret: self.accessTokenSecret
+					accessTokenKey: self.oauthClient.getAccessTokenKey(),
+					refreshTokenKey: self.refreshTokenKey,
+					expiresIn: json.expires_in
 				});
-			}, 1);
+			}, function(e){
+				self.oauthClient.setAccessToken([ null ]);
+				self.accessTokenKey = null;
+				self.refreshTokenKey = null;
+
+				self.fireEvent('login', {
+					success: false,
+					error: true
+				});
+			});
 		} else {
 			createAuthWindow.call(this);
 
 			this.oauthClient.setAccessToken('', '');
-			this.oauthClient.post(this.oauthClient.requestTokenUrl, {}, function(e){
-				var token = self.oauthClient.parseTokenRequest(e, e.responseHeaders['Content-Type'] || undefined);
-				self.oauthClient.setAccessToken([token.oauth_token, token.oauth_token_secret]);
-				self.webView.url = self.authorizeUrl + '?' + e.text;
-			}, function(e){
-				self.fireEvent('login', {
-					success: false,
-					error: 'Failure to fetch access token, please try again.',
-					result: e
-				});
-			});
+			self.webView.url = this.oauthClient.requestTokenUrl + '?client_id=' + this.consumerKey + '&response_type=code&scope=' + this.scope + '&display=smartphone';
 		}
 	};
 
-	Tumblr.prototype.request = function(path, params, headers, httpVerb, callback){
+	Mixi.prototype.request = function(path, params, headers, httpVerb, callback){
 		var self = this, oauth = this.oauthClient, url;
 
 		if (path.match(/^https?:\/\/.+/i)) {
 			url = path;
 		} else {
-			url = 'http://api.tumblr.com/' + path;
+			url = 'http://api.mixi-platform.com/' + path;
 		}
+
+		headers.Authorization = 'OAuth ' + oauth.getAccessTokenKey();
 
 		oauth.request({
 			method: httpVerb,
@@ -199,19 +203,42 @@ exports.Tumblr = (function(global){
 		});
 	};
 
-	Tumblr.prototype.addEventListener = function(eventName, callback) {
+	Mixi.prototype.addEventListener = function(eventName, callback) {
 		this.listeners = this.listeners || {};
 		this.listeners[eventName] = this.listeners[eventName] || [];
 		this.listeners[eventName].push(callback);
 	};
 
-	Tumblr.prototype.fireEvent = function(eventName, data) {
+	Mixi.prototype.fireEvent = function(eventName, data) {
 		var eventListeners = this.listeners[eventName] || [];
 		for (var i = 0; i < eventListeners.length; i++) {
 			eventListeners[i].call(this, data);
 		}
 	};
 
+	Mixi.prototype.refreshAccessToken = function(){
+		var self = this;
+		self.oauthClient.post('https://secure.mixi-platform.com/2/token', { grant_type: 'refresh_token', client_id: self.consumerKey, client_secret: self.consumerSecret, refresh_token: self.refreshTokenKey }, function(e){
+			var json = JSON.parse(e.text);
 
-	return Tumblr;
+			self.oauthClient.setAccessToken([ json.access_token ]);
+			self.accessTokenKey = json.access_token;
+			self.refreshTokenKey = json.refresh_token;
+
+			self.fireEvent('refresh', {
+				success: true,
+				error: false,
+				accessTokenKey: self.oauthClient.getAccessTokenKey(),
+				refreshTokenKey: self.refreshTokenKey,
+				expiresIn: json.expires_in
+			});
+		}, function(e){
+			self.fireEvent('refresh', {
+				success: false,
+				error: true
+			});
+		});
+	};
+
+	return Mixi;
 })(this);

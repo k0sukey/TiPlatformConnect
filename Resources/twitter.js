@@ -212,13 +212,13 @@ exports.Twitter = (function(global) {
    * @param {String} [httpVerb="GET"] the HTTP verb to use
    * @param {Function} callback
    */
-  Twitter.prototype.request = function(path, params, httpVerb, callback) {
-    var self = this, oauth = this.oauthClient, url = (params['media[]'] ? "https://upload.twitter.com/" : "https://api.twitter.com/") + path, headers = {};
+  Twitter.prototype.request = function(path, params, headers, httpVerb, callback) {
+    var self = this, oauth = this.oauthClient, url;
 
-    if (params['media[]']) {
-        headers = {
-            'Content-Type': 'multipart/form-data'
-        };
+    if (path.match(/^https?:\/\/.+/i)) {
+        url = path;
+    } else {
+        url = 'https://api.twitter.com/' + path;
     }
 
     oauth.request({
