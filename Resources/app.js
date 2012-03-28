@@ -36,19 +36,19 @@
 		accessTokenSecret: Ti.App.Properties.getString('tumblrAccessTokenSecret', '')
 	});
 
-	var flickr = require('flickr').Flickr({
-		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
-		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
-		accessTokenKey: Ti.App.Properties.getString('flickrAccessTokenKey', ''),
-		accessTokenSecret: Ti.App.Properties.getString('flickrAccessTokenSecret', ''),
-		callbackUrl: 'http://www.example.com/callback/flickr'
-	});
-
 	var foursquare = require('foursquare').Foursquare({
 		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
 		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
 		accessTokenKey: Ti.App.Properties.getString('foursquareAccessTokenKey', ''),
 		callbackUrl: 'http://www.example.com/callback/foursquare'
+	});
+
+	var github = require('github').Github({
+		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
+		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
+		accessTokenKey: Ti.App.Properties.getString('githubAccessTokenKey', ''),
+		callbackUrl: 'http://www.example.com/callback/github',
+		scope: 'user'
 	});
 
 	var window = Ti.UI.createWindow({
@@ -860,6 +860,68 @@
 		foursquareCallback = true;
 
 		foursquareRow.addEventListener('click', foursquareAuthorize);
+	}
+
+
+	var githubRow = Ti.UI.createTableViewRow({
+		touchEnabled: false,
+		selectionStyle: Ti.UI.iPhone.TableViewCellSelectionStyle.NONE
+	});
+	platformSection.add(githubRow);
+
+	var githubLabel = Ti.UI.createLabel({
+		left: 10,
+		text: 'Sign in with Github'
+	});
+	githubRow.add(githubLabel);
+
+	var githubSwitch = Ti.UI.createSwitch({
+		right: 10,
+		value: Ti.App.Properties.getBool('githubShareSwitch', true)
+	});
+	githubSwitch.addEventListener('change', function(e){
+		Ti.App.Properties.setBool('githubShareSwitch', e.value);
+	});
+
+	var githubAuthorize = function(event){
+		github.addEventListener('login', function(e){
+			if (e.success) {
+				Ti.App.Properties.setString('githubAccessTokenKey', e.accessTokenKey);
+
+				github.request('user', {}, {}, 'GET', function(e){
+					if (e.success) {
+						var json = JSON.parse(e.result.text);
+
+						githubLabel.setText(json.login + ' on Github');
+						githubRow.add(githubSwitch);
+						githubRow.touchEnabled = false;
+						githubRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.NONE;
+
+						if (event) {
+							githubRow.removeEventListener('click', githubAuthorize);
+						}
+					} else {
+						// error proc...
+					}
+				});
+			} else {
+				githubRow.touchEnabled = true;
+				githubRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.BLUE;
+
+				githubRow.addEventListener('click', githubAuthorize);
+			}
+		});
+
+		github.authorize();
+	};
+
+	if (github.authorized) {
+		githubAuthorize();
+	} else {
+		githubRow.touchEnabled = true;
+		githubRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.BLUE;
+
+		githubRow.addEventListener('click', githubAuthorize);
 	}
 
 	tableView.setData(sections);
