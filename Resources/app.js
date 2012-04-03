@@ -9,6 +9,13 @@
 		accessTokenSecret: Ti.App.Properties.getString('twitterAccessTokenSecret', '')
 	});
 
+	var linkedin = require('linkedin').Linkedin({
+		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
+		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
+		accessTokenKey: Ti.App.Properties.getString('linkedinAccessTokenKey', ''),
+		accessTokenSecret: Ti.App.Properties.getString('linkedinAccessTokenSecret', '')
+	});
+
 	var tumblr = require('tumblr').Tumblr({
 		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
 		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
@@ -534,6 +541,66 @@
 		}
 	});
 
+	var linkedinRow = Ti.UI.createTableViewRow({
+		height: Ti.UI.FILL,
+		touchEnabled: false,
+		selectionStyle: Ti.UI.iPhone.TableViewCellSelectionStyle.NONE
+	});
+	platformSection.add(linkedinRow);
+
+	var linkedinLabel = Ti.UI.createLabel({
+		left: 10,
+		text: 'Sign in with Linkedin'
+	});
+	linkedinRow.add(linkedinLabel);
+
+	var linkedinSwitch = Ti.UI.createSwitch({
+		right: 10,
+		value: Ti.App.Properties.getBool('linkedinShareSwitch', true)
+	});
+	linkedinSwitch.addEventListener('change', function(e){
+		Ti.App.Properties.setBool('linkedinShareSwitch', e.value);
+	});
+
+	var linkedinAuthorize = function(event){
+		linkedin.addEventListener('login', function(e){
+			if (e.success) {
+				Ti.App.Properties.setString('linkedinAccessTokenKey', e.accessTokenKey);
+				Ti.App.Properties.setString('linkedinAccessTokenSecret', e.accessTokenSecret);
+
+				linkedin.request('v1/people/~', { format: 'json' }, {}, 'GET', function(e){
+					if (e.success) {
+						var json = JSON.parse(e.result.text);
+
+						linkedinLabel.setText(json.firstName + ' on Linkedin');
+						linkedinRow.add(linkedinSwitch);
+						linkedinRow.touchEnabled = false;
+						linkedinRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.NONE;
+
+						if (event) {
+							linkedinRow.removeEventListener('click', linkedinAuthorize);
+						}
+					} else {
+						// error proc...
+					}
+				});
+			} else {
+				// error proc…
+			}
+		});
+
+		linkedin.authorize();
+	};
+
+	if (linkedin.authorized) {
+		linkedinAuthorize();
+	} else {
+		linkedinRow.touchEnabled = true;
+		linkedinRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.BLUE;
+
+		linkedinRow.addEventListener('click', linkedinAuthorize);
+	}
+
 	var tumblrRow = Ti.UI.createTableViewRow({
 		touchEnabled: false,
 		selectionStyle: Ti.UI.iPhone.TableViewCellSelectionStyle.NONE
@@ -574,7 +641,7 @@
 						var tumblrBlogRow = Ti.UI.createTableViewRow({
 							hasChild: true
 						});
-						tableView.insertRowAfter(5, tumblrBlogRow);
+						tableView.insertRowAfter(6, tumblrBlogRow);
 
 						tumblrBlogRow.addEventListener('click', function(){
 							var tumblrBlogWindow = Ti.UI.createWindow({
@@ -861,7 +928,6 @@
 
 		foursquareRow.addEventListener('click', foursquareAuthorize);
 	}
-
 
 	var githubRow = Ti.UI.createTableViewRow({
 		touchEnabled: false,

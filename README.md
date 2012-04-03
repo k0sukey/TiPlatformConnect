@@ -6,6 +6,7 @@
 * Added foursquare.js
 * Added flickr.js. But in development...
 * Added github.js
+* Added linkedin.js
 * Rewrite the app.js
 * Extend platform.request(path, params, headers, httpVerb, callback); path is replaced url possible. Added headers.
 
@@ -36,6 +37,10 @@ Required callback url in the library properties.
 ## github.js
 
 Required callback URL in Github application setting page, And need in the library properties.
+
+## linkedin.js
+
+Not required callback URL. 
 
 ## Thanks
 * Original twitter-titanium by @ebryn
