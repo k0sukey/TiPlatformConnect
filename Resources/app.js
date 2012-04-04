@@ -50,6 +50,18 @@
 		callbackUrl: 'http://www.example.com/callback/foursquare'
 	});
 
+	var google = require('google').Google({
+		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
+		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
+		accessTokenKey: Ti.App.Properties.getString('googleAccessTokenKey', ''),
+		refreshTokenKey: Ti.App.Properties.getString('googleRefreshTokenKey', ''),
+		scope: 'https://www.google.com/m8/feeds'
+	});
+
+	google.addEventListener('refresh', function(e){
+		Ti.API.info(e);
+	});
+
 	var github = require('github').Github({
 		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
 		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
@@ -927,6 +939,70 @@
 		foursquareCallback = true;
 
 		foursquareRow.addEventListener('click', foursquareAuthorize);
+	}
+
+	var googleRow = Ti.UI.createTableViewRow({
+		height: Ti.UI.FILL,
+		touchEnabled: false,
+		selectionStyle: Ti.UI.iPhone.TableViewCellSelectionStyle.NONE
+	});
+	platformSection.add(googleRow);
+
+	var googleLabel = Ti.UI.createLabel({
+		left: 10,
+		text: 'Sign in with Google'
+	});
+	googleRow.add(googleLabel);
+
+	var googleSwitch = Ti.UI.createSwitch({
+		right: 10,
+		value: Ti.App.Properties.getBool('googleShareSwitch', true)
+	});
+	googleSwitch.addEventListener('change', function(e){
+		Ti.App.Properties.setBool('googleShareSwitch', e.value);
+	});
+
+	var googleAuthorize = function(event){
+		google.addEventListener('login', function(e){
+			if (e.success) {
+				Ti.App.Properties.setString('googleAccessTokenKey', e.accessTokenKey);
+				Ti.App.Properties.setString('googleRefreshTokenKey', e.refreshTokenKey);
+
+				google.request('https://www.google.com/m8/feeds/contacts/default/full', { alt: 'json' }, {}, 'GET', function(e){
+					if (e.success) {
+						var json = JSON.parse(e.result.text);
+
+						googleLabel.setText(json.feed.author[0].name.$t + ' on Google');
+						googleRow.add(googleSwitch);
+						googleRow.touchEnabled = false;
+						googleRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.NONE;
+
+						if (event) {
+							googleRow.removeEventListener('click', googleAuthorize);
+						}
+
+						setInterval(function(){
+							google.refreshAccessToken();
+						}, expiresIn * 0.9 * 1000);
+					} else {
+						// error proc...
+					}
+				});
+			} else {
+				// error proc…
+			}
+		});
+
+		google.authorize();
+	};
+
+	if (google.authorized) {
+		googleAuthorize();
+	} else {
+		googleRow.touchEnabled = true;
+		googleRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.BLUE;
+
+		googleRow.addEventListener('click', googleAuthorize);
 	}
 
 	var githubRow = Ti.UI.createTableViewRow({

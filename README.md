@@ -7,16 +7,17 @@
 * Added flickr.js. But in development...
 * Added github.js
 * Added linkedin.js
+* Added google.js
 * Rewrite the app.js
 * Extend platform.request(path, params, headers, httpVerb, callback); path is replaced url possible. Added headers.
 
 ## How to use
 
-See Resouces/app.js
+See Resources/app.js
 
 ## twitter.js
 
-update_with_media support! How to Resouces/app.js
+update_with_media support! How to Resources/app.js
 
 ## tumblr.js
 
@@ -24,7 +25,7 @@ Required default callback URL in Tumblr application setting page. No need to in 
 
 ## mixi.js
 
-Required callback url in the library properties. Required access token refresh(only mixi.js), how to Resouces/app.js.
+Required callback url in the library properties. Required access token refresh, How to Resources/app.js.
 
 ## foursquare.js
 
@@ -41,6 +42,11 @@ Required callback URL in Github application setting page, And need in the librar
 ## linkedin.js
 
 Not required callback URL. 
+
+## google.js
+
+Not required callback URL. Required access token refresh, How to Resources/app.js.
+
 
 ## Thanks
 * Original twitter-titanium by @ebryn
