@@ -243,6 +243,17 @@ exports.Twitter = (function(global) {
     });
   };
   
+  Twitter.prototype.logout = function(callback){
+  	var self = this;
+  	
+  	this.oauthClient.setAccessToken('', '');
+    this.accessTokenKey = null;
+    this.accessTokenSecret = null;
+    this.authorized = false;
+    
+    callback();
+  };
+  
   /*
    * Add an event listener
    */

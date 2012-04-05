@@ -203,6 +203,17 @@ exports.Mixi = (function(global){
 		});
 	};
 
+	Mixi.prototype.logout = function(callback){
+		var self = this;
+
+		this.oauthClient.setAccessToken('', '');
+		this.accessTokenKey = null;
+		this.refreshTokenKey = null;
+		this.authorized = false;
+
+		callback();
+	};
+
 	Mixi.prototype.addEventListener = function(eventName, callback) {
 		this.listeners = this.listeners || {};
 		this.listeners[eventName] = this.listeners[eventName] || [];
@@ -218,6 +229,7 @@ exports.Mixi = (function(global){
 
 	Mixi.prototype.refreshAccessToken = function(){
 		var self = this;
+
 		self.oauthClient.post('https://secure.mixi-platform.com/2/token', { grant_type: 'refresh_token', client_id: self.consumerKey, client_secret: self.consumerSecret, refresh_token: self.refreshTokenKey }, function(e){
 			var json = JSON.parse(e.text);
 

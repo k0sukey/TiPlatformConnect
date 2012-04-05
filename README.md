@@ -11,6 +11,7 @@
 * Added etsy.js
 * Rewrite the app.js
 * Extend platform.request(path, params, headers, httpVerb, callback); path is replaced url possible. Added headers.
+* Logout method support.
 
 ## How to use
 
@@ -51,6 +52,13 @@ Not required callback URL. Required access token refresh, How to Resources/app.j
 ## etsy.js
 
 Not required callback URL.
+
+
+## logout example
+var twitter = require('twitter').Twitter({ ... });
+twitter.logout(function(){
+  // callback
+});
 
 
 ## Thanks

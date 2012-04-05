@@ -218,6 +218,17 @@ exports.Etsy = (function(global){
 		});
 	};
 
+	Etsy.prototype.logout = function(callback){
+		var self = this;
+
+		this.oauthClient.setAccessToken('', '');
+		this.accessTokenKey = null;
+		this.accessTokenSecret = null;
+		this.authorized = false;
+
+		callback();
+	};
+
 	Etsy.prototype.addEventListener = function(eventName, callback) {
 		this.listeners = this.listeners || {};
 		this.listeners[eventName] = this.listeners[eventName] || [];

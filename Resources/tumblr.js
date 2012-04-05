@@ -199,6 +199,17 @@ exports.Tumblr = (function(global){
 		});
 	};
 
+	Tumblr.prototype.logout = function(callback){
+		var self = this;
+
+		this.oauthClient.setAccessToken('', '');
+		this.accessTokenKey = null;
+		this.accessTokenSecret = null;
+		this.authorized = false;
+
+		callback();
+	};
+
 	Tumblr.prototype.addEventListener = function(eventName, callback) {
 		this.listeners = this.listeners || {};
 		this.listeners[eventName] = this.listeners[eventName] || [];

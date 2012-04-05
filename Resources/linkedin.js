@@ -206,6 +206,17 @@ exports.Linkedin = (function(global){
 		});
 	};
 
+	Linkedin.prototype.logout = function(callback){
+		var self = this;
+
+		this.oauthClient.setAccessToken('', '');
+		this.accessTokenKey = null;
+		this.accessTokenSecret = null;
+		this.authorized = false;
+
+		callback();
+	};
+
 	Linkedin.prototype.addEventListener = function(eventName, callback) {
 		this.listeners = this.listeners || {};
 		this.listeners[eventName] = this.listeners[eventName] || [];

@@ -199,6 +199,17 @@ exports.Google = (function(global){
 		});
 	};
 
+	Google.prototype.logout = function(callback){
+		var self = this;
+
+		this.oauthClient.setAccessToken('', '');
+		this.accessTokenKey = null;
+		this.refreshTokenKey = null;
+		this.authorized = false;
+
+		callback();
+	};
+
 	Google.prototype.addEventListener = function(eventName, callback) {
 		this.listeners = this.listeners || {};
 		this.listeners[eventName] = this.listeners[eventName] || [];

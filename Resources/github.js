@@ -182,6 +182,16 @@ exports.Github = (function(global){
 		});
 	};
 
+	Github.prototype.logout = function(callback){
+		var self = this;
+
+		this.oauthClient.setAccessToken('', '');
+		this.accessTokenKey = null;
+		this.authorized = false;
+
+		callback();
+	};
+
 	Github.prototype.addEventListener = function(eventName, callback) {
 		this.listeners = this.listeners || {};
 		this.listeners[eventName] = this.listeners[eventName] || [];
@@ -194,7 +204,6 @@ exports.Github = (function(global){
 			eventListeners[i].call(this, data);
 		}
 	};
-
 
 	return Github;
 })(this);
