@@ -8,6 +8,7 @@
 * Added github.js
 * Added linkedin.js
 * Added google.js
+* Added etsy.js
 * Rewrite the app.js
 * Extend platform.request(path, params, headers, httpVerb, callback); path is replaced url possible. Added headers.
 
@@ -46,6 +47,10 @@ Not required callback URL.
 ## google.js
 
 Not required callback URL. Required access token refresh, How to Resources/app.js.
+
+## etsy.js
+
+Not required callback URL.
 
 
 ## Thanks

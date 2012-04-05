@@ -70,6 +70,14 @@
 		scope: 'user'
 	});
 
+	var etsy = require('etsy').Etsy({
+		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
+		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
+		accessTokenKey: Ti.App.Properties.getString('etsyAccessTokenKey', ''),
+		accessTokenSecret: Ti.App.Properties.getString('etsyAccessTokenSecret', ''),
+		scope: 'profile_r'
+	});
+
 	var window = Ti.UI.createWindow({
 		title: 'TiPlatformConnect',
 		tabBarHidden: true
@@ -1064,6 +1072,69 @@
 		githubRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.BLUE;
 
 		githubRow.addEventListener('click', githubAuthorize);
+	}
+
+	var etsyRow = Ti.UI.createTableViewRow({
+		height: Ti.UI.FILL,
+		touchEnabled: false,
+		selectionStyle: Ti.UI.iPhone.TableViewCellSelectionStyle.NONE
+	});
+	platformSection.add(etsyRow);
+
+	var etsyLabel = Ti.UI.createLabel({
+		left: 10,
+		text: 'Sign in with Etsy'
+	});
+	etsyRow.add(etsyLabel);
+
+	var etsySwitch = Ti.UI.createSwitch({
+		right: 10,
+		value: Ti.App.Properties.getBool('etsyShareSwitch', true)
+	});
+	etsySwitch.addEventListener('change', function(e){
+		Ti.App.Properties.setBool('etsyShareSwitch', e.value);
+	});
+
+	var etsyAuthorize = function(event){
+		etsy.addEventListener('login', function(e){
+			if (e.success) {
+				Ti.App.Properties.setString('etsyAccessTokenKey', e.accessTokenKey);
+				Ti.App.Properties.setString('etsyAccessTokenSecret', e.accessTokenSecret);
+
+				etsy.request('v2/users/__SELF__', {}, {}, 'GET', function(e){
+					if (e.success) {
+						var json = JSON.parse(e.result.text);
+
+						etsyLabel.setText(json.results[0].login_name + ' on Etsy');
+						etsyRow.add(etsySwitch);
+						etsyRow.touchEnabled = false;
+						etsyRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.NONE;
+
+						if (event) {
+							etsyRow.removeEventListener('click', etsyAuthorize);
+						}
+					} else {
+						// error proc...
+					}
+				});
+			} else {
+				etsyRow.touchEnabled = true;
+				etsyRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.BLUE;
+
+				etsyRow.addEventListener('click', etsyAuthorize);
+			}
+		});
+
+		etsy.authorize();
+	};
+
+	if (etsy.authorized) {
+		etsyAuthorize();
+	} else {
+		etsyRow.touchEnabled = true;
+		etsyRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.BLUE;
+
+		etsyRow.addEventListener('click', etsyAuthorize);
 	}
 
 	tableView.setData(sections);
