@@ -112,7 +112,7 @@
 
 				if (place.id && place.name && place.latitude && place.longitude) {
 					params.lat = place.latitude;
-					params.long = place.longitude;
+					params['long'] = place.longitude;
 				}
 
 				twitter.request(path, params, headers, 'POST', function(e){
