@@ -78,6 +78,14 @@
 		scope: 'profile_r'
 	});
 
+	var hatena = require('hatena').Hatena({
+		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
+		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
+		accessTokenKey: Ti.App.Properties.getString('hatenaAccessTokenKey', ''),
+		accessTokenSecret: Ti.App.Properties.getString('hatenaAccessTokenSecret', ''),
+		scope: 'read_public,write_public'
+	});
+
 	var window = Ti.UI.createWindow({
 		title: 'TiPlatformConnect',
 		tabBarHidden: true
@@ -112,7 +120,7 @@
 
 				if (place.id && place.name && place.latitude && place.longitude) {
 					params.lat = place.latitude;
-					params['long'] = place.longitude;
+					params.long = place.longitude;
 				}
 
 				twitter.request(path, params, headers, 'POST', function(e){
@@ -1135,6 +1143,66 @@
 		etsyRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.BLUE;
 
 		etsyRow.addEventListener('click', etsyAuthorize);
+	}
+
+	var hatenaRow = Ti.UI.createTableViewRow({
+		height: Ti.UI.FILL,
+		touchEnabled: false,
+		selectionStyle: Ti.UI.iPhone.TableViewCellSelectionStyle.NONE
+	});
+	platformSection.add(hatenaRow);
+
+	var hatenaLabel = Ti.UI.createLabel({
+		left: 10,
+		text: 'Sign in with Hatena'
+	});
+	hatenaRow.add(hatenaLabel);
+
+	var hatenaSwitch = Ti.UI.createSwitch({
+		right: 10,
+		value: Ti.App.Properties.getBool('hatenaShareSwitch', true)
+	});
+	hatenaSwitch.addEventListener('change', function(e){
+		Ti.App.Properties.setBool('hatenaShareSwitch', e.value);
+	});
+
+	var hatenaAuthorize = function(event){
+		hatena.addEventListener('login', function(e){
+			if (e.success) {
+				Ti.App.Properties.setString('hatenaAccessTokenKey', e.accessTokenKey);
+				Ti.App.Properties.setString('hatenaAccessTokenSecret', e.accessTokenSecret);
+
+				hatena.request('applications/my.json', {}, {}, 'POST', function(e){
+					if (e.success) {
+						var json = JSON.parse(e.result.text);
+
+						hatenaLabel.setText(json.display_name + ' on Hatena');
+						hatenaRow.add(hatenaSwitch);
+						hatenaRow.touchEnabled = false;
+						hatenaRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.NONE;
+
+						if (event) {
+							hatenaRow.removeEventListener('click', hatenaAuthorize);
+						}
+					} else {
+						// error proc...
+					}
+				});
+			} else {
+				// error proc…
+			}
+		});
+
+		hatena.authorize();
+	};
+
+	if (hatena.authorized) {
+		hatenaAuthorize();
+	} else {
+		hatenaRow.touchEnabled = true;
+		hatenaRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.BLUE;
+
+		hatenaRow.addEventListener('click', hatenaAuthorize);
 	}
 
 	tableView.setData(sections);

@@ -9,6 +9,7 @@
 * Added linkedin.js
 * Added google.js
 * Added etsy.js
+* Added hatena.js
 * Rewrite the app.js
 * Extend platform.request(path, params, headers, httpVerb, callback); path is replaced url possible. Added headers.
 * Logout method support.
@@ -52,6 +53,10 @@ Not required callback URL. Required access token refresh, How to Resources/app.j
 ## etsy.js
 
 Not required callback URL.
+
+## hatena.js
+
+Required scope, How to Resources/app.js
 
 
 ## logout example
