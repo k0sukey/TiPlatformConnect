@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="TiPlatformConnect : The easiest way to handle Twitter, Tumblr, Foursquare, and more authentication in your Titanium Mobile app" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>TiPlatformConnect</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/k0sukey/TiPlatformConnect">Fork Me on GitHub</a>
+
+          <h1 id="project_title">TiPlatformConnect</h1>
+          <h2 id="project_tagline">The easiest way to handle Twitter, Tumblr, Foursquare, and more authentication in your Titanium Mobile app</h2>
+
+          <section id="downloads">
+            <a class="zip_download_link" href="https://github.com/k0sukey/TiPlatformConnect/zipball/master">Download this project as a .zip file</a>
+            <a class="tar_download_link" href="https://github.com/k0sukey/TiPlatformConnect/tarball/master">Download this project as a tar.gz file</a>
+          </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h3>Introduction</h3>
+
+<p>This library is forked twitter-titanium.</p>
+
+<h3>How to use</h3>
+
+<p>See Resources/app.js</p>
+
+<h4>The basic usage</h4>
+
+<pre><code>var platform = require(platform).Platform({
+  consumerKey: 'XXXXXXXXXX',
+  consumerSecret: 'XXXXXXXXXX'.
+  accessTokenKey: Ti.App.Properties.getString('platformAccessTokenKey', ''),
+  accessTokenSecret: Ti.App.Properties.getString('platformAccessTokenSecret', '')
+});
+
+platform.addEventListener('login', function(e){
+  if (e.success) {
+    Ti.App.Properties.setString('platformAccessTokenKey', e.accessTokenKey);
+    Ti.App.Properties.setString('platformAccessTokenSecret', e.accessTokenSecret);
+
+    platform.request('path/to/api', {}, {}, 'GET', function(e){
+      if (e.success) {
+        var json = JSON.parse(e.result.text);
+
+        // success proc...
+      } else {
+        // error proc...
+      }
+  } else {
+    // error proc...
+  }
+});
+
+platform.authorize();
+</code></pre>
+
+<h4>platform.request() params</h4>
+
+<pre><code>platform.request('path/to/api', {}, {}, 'GET', function(e){ ... });
+</code></pre>
+
+<ul>
+<li>1st arg : API path, OK so may write URL full path(<a href="http://example.com/path/to/api">http://example.com/path/to/api</a>)</li>
+<li>2nd arg : API POST/GET params</li>
+<li>3rd arg : customize HTTP header</li>
+<li>4th arg : HTTP method</li>
+<li>5th arg : callback function</li>
+</ul><h4>Logout method</h4>
+
+<pre><code>twitter.logout(function(){
+  Ti.App.Properties.setString('twitterAccessTokenKey', '');
+  Ti.App.Properties.setString('twitterAccessTokenSecret', '');
+});
+</code></pre>
+
+<h3>Change log</h3>
+
+<h3>Thanks</h3>
+
+<ul>
+<li>Original twitter-titanium by <a href="https://github.com/ebryn" class="user-mention">@ebryn</a>
+</li>
+<li>jsOAuth by <a href="https://github.com/bytespider" class="user-mention">@bytespider</a>
+</li>
+</ul><h3>Support or Contact</h3>
+
+<p><a href="http://twitter.com/k0sukey">http://twitter.com/k0sukey</a></p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">TiPlatformConnect maintained by <a href="https://github.com/k0sukey">k0sukey</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-27177710-2");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+
+  </body>
+</html>
