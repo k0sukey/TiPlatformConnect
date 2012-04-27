@@ -39,8 +39,8 @@
 	var flickr = require('flickr').Flickr({
 		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
 		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
-		accessTokenKey: Ti.App.Properties.getString('flickrAccessTokenKey', ''),
-		accessTokenSecret: Ti.App.Properties.getString('flickrAccessTokenSecret', '')
+		accessTokenKey: Ti.App.Properties.getString('tumblrAccessTokenKey', ''),
+		accessTokenSecret: Ti.App.Properties.getString('tumblrAccessTokenSecret', '')
 	});
 
 	var foursquare = require('foursquare').Foursquare({
@@ -84,6 +84,13 @@
 		accessTokenKey: Ti.App.Properties.getString('hatenaAccessTokenKey', ''),
 		accessTokenSecret: Ti.App.Properties.getString('hatenaAccessTokenSecret', ''),
 		scope: 'read_public,write_public'
+	});
+
+	var dropbox = require('dropbox').Dropbox({
+		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
+		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
+		accessTokenKey: Ti.App.Properties.getString('dropboxAccessTokenKey', ''),
+		accessTokenSecret: Ti.App.Properties.getString('dropboxAccessTokenSecret', '')
 	});
 
 	var window = Ti.UI.createWindow({
@@ -1203,6 +1210,66 @@
 		hatenaRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.BLUE;
 
 		hatenaRow.addEventListener('click', hatenaAuthorize);
+	}
+
+	var dropboxRow = Ti.UI.createTableViewRow({
+		height: Ti.UI.FILL,
+		touchEnabled: false,
+		selectionStyle: Ti.UI.iPhone.TableViewCellSelectionStyle.NONE
+	});
+	platformSection.add(dropboxRow);
+
+	var dropboxLabel = Ti.UI.createLabel({
+		left: 10,
+		text: 'Sign in with Dropbox'
+	});
+	dropboxRow.add(dropboxLabel);
+
+	var dropboxSwitch = Ti.UI.createSwitch({
+		right: 10,
+		value: Ti.App.Properties.getBool('dropboxShareSwitch', true)
+	});
+	dropboxSwitch.addEventListener('change', function(e){
+		Ti.App.Properties.setBool('dropboxShareSwitch', e.value);
+	});
+
+	var dropboxAuthorize = function(event){
+		dropbox.addEventListener('login', function(e){
+			if (e.success) {
+				Ti.App.Properties.setString('dropboxAccessTokenKey', e.accessTokenKey);
+				Ti.App.Properties.setString('dropboxAccessTokenSecret', e.accessTokenSecret);
+
+				dropbox.request('1/account/info', {}, {}, 'POST', function(e){
+					if (e.success) {
+						var json = JSON.parse(e.result.text);
+
+						dropboxLabel.setText(json.display_name + ' on Dropbox');
+						dropboxRow.add(dropboxSwitch);
+						dropboxRow.touchEnabled = false;
+						dropboxRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.NONE;
+
+						if (event) {
+							dropboxRow.removeEventListener('click', dropboxAuthorize);
+						}
+					} else {
+						// error proc...
+					}
+				});
+			} else {
+				// error proc…
+			}
+		});
+
+		dropbox.authorize();
+	};
+
+	if (dropbox.authorized) {
+		dropboxAuthorize();
+	} else {
+		dropboxRow.touchEnabled = true;
+		dropboxRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.BLUE;
+
+		dropboxRow.addEventListener('click', dropboxAuthorize);
 	}
 
 	tableView.setData(sections);
