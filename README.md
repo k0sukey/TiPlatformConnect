@@ -10,6 +10,7 @@
 * Added google.js
 * Added etsy.js
 * Added hatena.js
+* Added dropbox.js
 * Rewrite the app.js
 * Extend platform.request(path, params, headers, httpVerb, callback); path is replaced url possible. Added headers.
 * Logout method support.
@@ -57,6 +58,10 @@ Not required callback URL.
 ## hatena.js
 
 Required scope, How to Resources/app.js
+
+## dropbox.js
+
+Anyway authentication only, How to Resources/app.js
 
 
 ## logout example
