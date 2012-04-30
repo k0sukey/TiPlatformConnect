@@ -39,8 +39,9 @@
 	var flickr = require('flickr').Flickr({
 		consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
 		consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
-		accessTokenKey: Ti.App.Properties.getString('tumblrAccessTokenKey', ''),
-		accessTokenSecret: Ti.App.Properties.getString('tumblrAccessTokenSecret', '')
+		accessTokenKey: Ti.App.Properties.getString('flickrAccessTokenKey', ''),
+		accessTokenSecret: Ti.App.Properties.getString('flickrAccessTokenSecret', ''),
+		callbackUrl: 'http://www.example.com/callback/flickr'
 	});
 
 	var foursquare = require('foursquare').Foursquare({
