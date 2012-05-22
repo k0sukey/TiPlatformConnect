@@ -173,6 +173,12 @@ exports.Foursquare = (function(global){
 			url = 'https://api.foursquare.com/' + path;
 		}
 
+		if(this.oauthClient.getAccessTokenKey() !==''){
+			url = url + '?oauth_token=' + this.oauthClient.getAccessTokenKey()
+		}else{
+			url = url+ '?client_id=' + this.oauthClient.getAccessConsumerKey() + '?client_secret=' + this.oauthClient.getAccessConsumerSecret();
+		}
+		
 		oauth.request({
 			method: httpVerb,
 			url: url + '?oauth_token=' + this.oauthClient.getAccessTokenKey(),

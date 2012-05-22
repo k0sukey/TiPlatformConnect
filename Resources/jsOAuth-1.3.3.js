@@ -291,6 +291,14 @@ exports.OAuth = (function (global) {
                 return oauth.accessTokenSecret;
             };
 
+            this.getAccessConsumerKey = function () {
+                return oauth.consumerKey;
+            };
+            
+            this.getAccessConsumerSecret = function () {
+                return oauth.consumerSecret;
+            };     
+            
             this.setAccessToken = function (tokenArray, tokenSecret) {
                 if (tokenSecret) {
                     tokenArray = [tokenArray, tokenSecret];
