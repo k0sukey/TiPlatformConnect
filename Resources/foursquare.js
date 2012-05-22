@@ -166,13 +166,33 @@ exports.Foursquare = (function(global){
 
 	Foursquare.prototype.request = function(path, params, headers, httpVerb, callback){
 		var self = this, oauth = this.oauthClient, url;
-
+		
+		var dateString = function(){
+        	var d = new Date();
+    		var curr_date = d.getDate();
+    		var curr_month = d.getMonth();
+    		curr_month++;
+    		if(curr_month < 10){
+        		curr_month = '0' + curr_month;
+        	}
+        	var curr_year = d.getFullYear();
+        	return curr_year+curr_month+curr_date;
+    	}
+    	
 		if (path.match(/^https?:\/\/.+/i)) {
 			url = path;
 		} else {
 			url = 'https://api.foursquare.com/' + path;
 		}
 
+		if(this.oauthClient.getAccessTokenKey() !==''){
+			url = url + '?oauth_token=' + this.oauthClient.getAccessTokenKey()
+		}else{
+			url = url+ '?client_id=' + this.oauthClient.getAccessConsumerKey() + '?client_secret=' + this.oauthClient.getAccessConsumerSecret();
+		}
+		
+		url = url + '&v=' + dateString();
+		
 		oauth.request({
 			method: httpVerb,
 			url: url + '?oauth_token=' + this.oauthClient.getAccessTokenKey(),
