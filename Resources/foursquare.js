@@ -184,35 +184,64 @@ exports.Foursquare = (function(global){
 		} else {
 			url = 'https://api.foursquare.com/' + path;
 		}
-
+		
+		url = url + '?v=' + dateString();
+		
 		if(this.oauthClient.getAccessTokenKey() !==''){
-			url = url + '?oauth_token=' + this.oauthClient.getAccessTokenKey()
-		}else{
-			url = url+ '?client_id=' + this.oauthClient.getAccessConsumerKey() + '?client_secret=' + this.oauthClient.getAccessConsumerSecret();
-		}
-		
-		url = url + '&v=' + dateString();
-		
-		oauth.request({
-			method: httpVerb,
-			url: url + '?oauth_token=' + this.oauthClient.getAccessTokenKey(),
-			data: params,
-			headers: headers,
-			success: function(data){
+			url = url + '&oauth_token=' + this.oauthClient.getAccessTokenKey();
+			
+			oauth.request({
+				method: httpVerb,
+				url: url,
+				data: params,
+				headers: headers,
+				success: function(data){
+					callback.call(self, {
+						success: true,
+						error: false,
+						result: data
+					});
+				},
+				error: function(data){
+					callback.call(self, {
+						success: false,
+						error: 'Request failed',
+						result: data
+					});
+				}
+			});
+				
+		}else{		
+			url = url + '&client_id=' + this.oauthClient.getAccessConsumerKey() + '&client_secret=' + this.oauthClient.getAccessConsumerSecret();
+			
+			for(p in params){
+				url = url + '&' + p + '=' +params[p]
+			}
+			
+			var xhr = Titanium.Network.createHTTPClient();
+			xhr.onload = function(data)
+			{
 				callback.call(self, {
 					success: true,
 					error: false,
-					result: data
+					result: {
+						text: xhr.responseText
+					}
 				});
-			},
-			error: function(data){
+			};
+			
+			xhr.onerror = function(data)
+			{
 				callback.call(self, {
 					success: false,
 					error: 'Request failed',
 					result: data
 				});
-			}
-		});
+			};
+			
+			xhr.open(httpVerb, url);
+			xhr.send();
+		}
 	};
 
 	Foursquare.prototype.logout = function(callback){
