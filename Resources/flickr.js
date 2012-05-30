@@ -185,7 +185,7 @@ exports.Flickr = (function(global){
 					result: data
 				});
 			},
-			error: function(data){
+			failure: function(data){
 				callback.call(self, {
 					success: false,
 					error: 'Request failed',
