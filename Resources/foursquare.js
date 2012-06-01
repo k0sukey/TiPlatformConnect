@@ -131,15 +131,15 @@ exports.Foursquare = (function(global){
 				webViewWindow.remove(loadingOverlay);
 				actInd.hide();
 
-				if (webViewWindow.leftNavButton !== backButton) {
-					webViewWindow.leftNavButton = backButton;
+				if (webViewWindow.leftNavButton !== closeButton) {
+					webViewWindow.leftNavButton = closeButton;
 				}
 			} else {
 				webViewWindow.remove(loadingOverlay);
 				actInd.hide();
 
-				if (webViewWindow.leftNavButton !== closeButton) {
-					webViewWindow.leftNavButton = closeButton;
+				if (webViewWindow.leftNavButton !== backButton) {
+					webViewWindow.leftNavButton = backButton;
 				}
 			}
 		});
