@@ -168,16 +168,19 @@ exports.Foursquare = (function(global){
 		var self = this, oauth = this.oauthClient, url;
 		
 		var dateString = function(){
-        	var d = new Date();
-    		var curr_date = d.getDate();
-    		var curr_month = d.getMonth();
-    		curr_month++;
-    		if(curr_month < 10){
-        		curr_month = '0' + curr_month;
-        	}
-        	var curr_year = d.getFullYear();
-        	return curr_year+curr_month+curr_date;
-    	}
+			var d = new Date();
+			var curr_date = d.getDate();
+			if (curr_date < 10) {
+				curr_date = '0' + curr_date;
+			}
+ 			var curr_month = d.getMonth();
+ 			curr_month++;
+ 			if (curr_month < 10) {
+ 				curr_month = '0' + curr_month;
+ 			}
+ 			var curr_year = d.getFullYear();
+ 			return curr_year+curr_month+curr_date;
+ 		}
     	
 		if (path.match(/^https?:\/\/.+/i)) {
 			url = path;
