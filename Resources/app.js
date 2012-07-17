@@ -416,7 +416,7 @@
 
 							var rows = [];
 
-							json.response.groups[0].items.forEach(function(venue){
+							json.response.venues.forEach(function(venue){
 								var venueRow = Ti.UI.createTableViewRow({
 									id: venue.id,
 									name: venue.name,
