@@ -103,7 +103,19 @@ exports.Github = (function(global){
 					webViewWindow.close();
 				}
 
-				oauth.post('https://github.com/login/oauth/access_token', { client_id: self.consumerKey, client_secret: self.consumerSecret, code: event.url.split('?code=')[1], redirect_uri: self.callbackUrl }, function(e){
+				var query = {};
+				event.url.split('?')[1].split('&').forEach(function(value){
+					var tmp = value.split('=');
+					query[tmp[0]] = tmp[1];
+				});
+
+				oauth.post('https://github.com/login/oauth/access_token', {
+					client_id: self.consumerKey,
+					client_secret: self.consumerSecret,
+					code: query.code,
+					state: query.state,
+					redirect_uri: self.callbackUrl
+				}, function(e){
 					var token = oauth.parseTokenRequest(e, e.responseHeaders['Content-Type'] || undefined);
 
 					oauth.setAccessToken([ token.access_token ]);

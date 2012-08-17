@@ -484,6 +484,11 @@ exports.OAuth = (function (global) {
                 }
 
                 xhr.open(method, url+'', true);
+                if (('Content-Type' in headers)
+                 && typeof global.Titanium !== 'undefined'
+                 && global.Titanium.Platform.osname === 'android') {
+                    delete headers['Content-Type'];
+                }
                 if (!('Authorization' in headers)) {
                     xhr.setRequestHeader('Authorization', 'OAuth ' + toHeaderString(headerParams));
                 }
