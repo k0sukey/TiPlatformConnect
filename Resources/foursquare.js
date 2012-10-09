@@ -169,26 +169,33 @@ exports.Foursquare = (function(global){
 		
 		var dateString = function(){
 			var d = new Date();
+
 			var curr_date = d.getDate();
 			if (curr_date < 10) {
 				curr_date = '0' + curr_date;
 			}
- 			var curr_month = d.getMonth();
- 			curr_month++;
- 			if (curr_month < 10) {
- 				curr_month = '0' + curr_month;
- 			}
- 			var curr_year = d.getFullYear();
- 			return curr_year+curr_month+curr_date;
- 		}
-    	
+
+			var curr_month = d.getMonth() + 1;
+			if (curr_month < 10) {
+				curr_month = '0' + curr_month;
+			}
+
+			var curr_year = d.getFullYear();
+
+			return '' + curr_year + curr_month + curr_date;
+		};
+
 		if (path.match(/^https?:\/\/.+/i)) {
 			url = path;
 		} else {
 			url = 'https://api.foursquare.com/' + path;
 		}
 		
-		url = url + '?v=' + dateString();
+		if (url.indexOf('?') === -1) {
+			url = url + '?v=' + dateString();
+		} else {
+			url = url + '&v=' + dateString();
+		}
 		
 		if(this.oauthClient.getAccessTokenKey() !==''){
 			url = url + '&oauth_token=' + this.oauthClient.getAccessTokenKey();
@@ -213,12 +220,11 @@ exports.Foursquare = (function(global){
 					});
 				}
 			});
-				
-		}else{		
+		} else {
 			url = url + '&client_id=' + this.oauthClient.getAccessConsumerKey() + '&client_secret=' + this.oauthClient.getAccessConsumerSecret();
 			
-			for(p in params){
-				url = url + '&' + p + '=' +params[p]
+			for (var p in params) {
+				url = url + '&' + p + '=' +params[p];
 			}
 			
 			var xhr = Titanium.Network.createHTTPClient();
