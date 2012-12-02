@@ -129,7 +129,6 @@ exports.Pocket = (function (global) {
                         userName: self.userName,
                         accessTokenKey: oauth.getAccessTokenKey()
                     });
-                    // Todo: Change true
                     self.authorized = true;
                     if (isAndroid) {
                         webViewWindow.close();
@@ -216,11 +215,9 @@ exports.Pocket = (function (global) {
 
     Pocket.prototype.logout = function (callback) {
         var self = this;
-
         this.oauthClient.setAccessToken("", "");
         this.accessTokenKey = null;
         this.authorized = false;
-
         callback();
     };
 
@@ -232,7 +229,7 @@ exports.Pocket = (function (global) {
 
     Pocket.prototype.fireEvent = function (eventName, data) {
         var eventListeners = this.listeners[eventName] || [];
-        for (var i = 0; i < eventListeners.length; i++) {
+        for (var i = 0, l = eventListeners.length; i < l; i++) {
             eventListeners[i].call(this, data);
         }
     };
