@@ -21,21 +21,19 @@ exports.Pocket = (function (global) {
         self.windowBack = options.windowBack || "Back";
         self.consumerKey = options.consumerKey;
         self.accessTokenKey = options.accessTokenKey;
-        self.userName = options.userName;
+        self.userName = options.pocketUserName;
         self.authorizeUrl = "https://getpocket.com/auth/authorize";
         self.code = "";
         self.scope = options.scope;
         self.authorized = false;
         self.listeners = {};
 
-        if (self.accessTokenKey) {
+        if (self.accessTokenKey && self.userName) {
             self.authorized = true;
         }
 
-        self.callbackUrl = options.callbackUrl || "";
-
-        options.requestTokenUrl = options.requestTokenUrl || "https://getpocket.com/v3/oauth/request";
-        options.authorizationUrl = options.authorizationUrl || "https://getpocket.com/auth/authorize";
+        options.requestTokenUrl = "https://getpocket.com/v3/oauth/request";
+        options.authorizationUrl = "https://getpocket.com/auth/authorize";
         self.oauthClient = jsOAuth.OAuth(options);
 
         return self;
