@@ -99,48 +99,68 @@ exports.Pocket = (function (global) {
             actInd.show();
         });
 
+        var getRequestToken = function () {
+            oauth.post("https://getpocket.com/v3/oauth/authorize", {
+                consumer_key: self.consumerKey,
+                code: self.code
+            }, function (response) {
+                // Success
+                var i, tmp, responseData = response.text.split("&"),
+                    length = responseData.length,
+                    responseDict = {};
+                for (i = 0; i < length; i += 1) {
+                    tmp = responseData[i].split("=");
+                    responseDict[tmp[0]] = tmp[1];
+                }
+                oauth.setAccessToken([responseDict.access_token, ""]);
+                self.accessTokenKey = responseDict.access_token;
+                self.userName = responseDict.username;
+                self.fireEvent("login", {
+                    success: true,
+                    error: false,
+                    userName: self.userName,
+                    accessTokenKey: oauth.getAccessTokenKey()
+                });
+                self.authorized = true;
+                if (isAndroid) {
+                    webViewWindow.close();
+                }
+            }, function (response) {
+                // Failure
+                setTimeout(function () {
+                    self.fireEvent("login", {
+                        success: false,
+                        error: true,
+                        result: response
+                    });
+                }, 1);
+            });
+        };
+
         webView.addEventListener("load", function (event) {
             if (event.url.indexOf("https://getpocket.com/auth/approve_access") !== -1) {
                 webViewWindow.remove(loadingOverlay);
                 actInd.hide();
-
                 if (webViewWindow.leftNavButton !== backButton) {
                     webViewWindow.leftNavButton = backButton;
                 }
-
-                oauth.post("https://getpocket.com/v3/oauth/authorize", {
-                    consumer_key: self.consumerKey,
-                    code: self.code
-                }, function (response) {
-                    // Success
-                    var i, tmp, responseData = response.text.split("&"),
-                        length = responseData.length,
-                        responseDict = {};
-                    for (i = 0; i < length; i += 1) {
-                        tmp = responseData[i].split("=");
-                        responseDict[tmp[0]] = tmp[1];
-                    }
-                    oauth.setAccessToken([responseDict.access_token, ""]);
-                    self.accessTokenKey = responseDict.access_token;
-                    self.userName = responseDict.username;
-                    self.fireEvent("login", {
-                        success: true,
-                        error: false,
-                        userName: self.userName,
-                        accessTokenKey: oauth.getAccessTokenKey()
-                    });
-                    self.authorized = true;
-                    if (isAndroid) {
-                        webViewWindow.close();
-                    }
-                });
-                // Close WebView window
+                getRequestToken();
                 if (!isAndroid) {
                     webViewWindow.close();
                 }
             } else {
                 webViewWindow.remove(loadingOverlay);
                 actInd.hide();
+
+                if (event.url.indexOf("https://getpocket.com/auth/authorize") > -1) {
+                    var authNodeLength = parseInt(webView.evalJS("(window.document.getElementsByTagName('body')[0]).childNodes.length"), 10);
+                    if (authNodeLength === 0) {
+                        getRequestToken();
+                        if (!isAndroid) {
+                            webViewWindow.close();
+                        }
+                    }
+                }
 
                 if (webViewWindow.leftNavButton !== closeButton) {
                     webViewWindow.leftNavButton = closeButton;
@@ -173,9 +193,20 @@ exports.Pocket = (function (global) {
                 self.webView.url = self.oauthClient.authorizationUrl + "?request_token=" + self.code + "&rnd=" + (new Date()).getTime() + "&redirect_uri="
             }, function (response) {
                 // Failure
-                alert(response);
+                setTimeout(function () {
+                    self.fireEvent("login", {
+                        success: false,
+                        error: true,
+                        result: response
+                    });
+                }, 1);
             });
         }
+    };
+
+    Pocket.prototype.getConsumerKey = function () {
+        var self = this;
+        return self.consumerKey;
     };
 
     Pocket.prototype.request = function (path, params, headers, httpVerb, callback) {
@@ -186,7 +217,7 @@ exports.Pocket = (function (global) {
         if (path.match(/^https?:\/\/.+/i)) {
             url = path;
         } else {
-            url = "https://getpocket.com/v3/" + path;
+            url = "https://getpocket.com/" + path;
         }
 
         params.access_token = this.accessTokenKey;
