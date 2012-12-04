@@ -11,6 +11,7 @@
 * Added etsy.js
 * Added hatena.js
 * Added dropbox.js
+* Added pocket.js
 * Rewrite the app.js
 * Extend platform.request(path, params, headers, httpVerb, callback); path is replaced url possible. Added headers.
 * Logout method support.
@@ -45,7 +46,7 @@ Required callback URL in Github application setting page, And need in the librar
 
 ## linkedin.js
 
-Not required callback URL. 
+Not required callback URL.
 
 ## google.js
 
@@ -62,6 +63,10 @@ Required scope, How to Resources/app.js
 ## dropbox.js
 
 Anyway authentication only, How to Resources/app.js
+
+## pocket.js
+
+Not required callback URL.
 
 
 ## logout example
