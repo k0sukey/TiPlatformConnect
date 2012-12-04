@@ -190,7 +190,7 @@ exports.Pocket = (function (global) {
             }, function (response) {
                 // Success
                 self.code = response.text.split("=")[1];
-                self.webView.url = self.oauthClient.authorizationUrl + "?request_token=" + self.code + "&rnd=" + (new Date()).getTime() + "&redirect_uri="
+                self.webView.url = self.oauthClient.authorizationUrl + "?request_token=" + self.code + "&rnd=" + (new Date()).getTime() + "&redirect_uri=";
             }, function (response) {
                 // Failure
                 setTimeout(function () {
