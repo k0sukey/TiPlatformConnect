@@ -94,6 +94,12 @@
 		accessTokenSecret: Ti.App.Properties.getString('dropboxAccessTokenSecret', '')
 	});
 
+	var pocket = require('pocket').Pocket({
+		consumerKey: "XXXXXXXXXXXXXXXXXXXX",
+		accessTokenKey: Ti.App.Properties.getString("pocketAccessTokenKey", ""),
+		pocketUserName: Ti.App.Properties.getString("pocketUserName", "")
+	});
+
 	var window = Ti.UI.createWindow({
 		title: 'TiPlatformConnect',
 		tabBarHidden: true
@@ -1271,6 +1277,71 @@
 		dropboxRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.BLUE;
 
 		dropboxRow.addEventListener('click', dropboxAuthorize);
+	}
+
+	var pocketRow = Ti.UI.createTableViewRow({
+		height: Ti.UI.FILL,
+		touchEnabled: false,
+		selectionStyle: Ti.UI.iPhone.TableViewCellSelectionStyle.NONE
+	});
+	platformSection.add(pocketRow);
+
+	var pocketLabel = Ti.UI.createLabel({
+		left: 10,
+		text: 'Sign in with Pocket'
+	});
+	pocketRow.add(pocketLabel);
+
+	var pocketSwitch = Ti.UI.createSwitch({
+		right: 10,
+		value: Ti.App.Properties.getBool('pocketShareSwitch', true)
+	});
+	pocketSwitch.addEventListener('change', function(e){
+		Ti.App.Properties.setBool('pocketShareSwitch', e.value);
+	});
+
+	var pocketAuthorize = function(event){
+		pocket.addEventListener('login', function(e){
+			if (e.success) {
+				Ti.App.Properties.setString('pocketAccessTokenKey', e.accessTokenKey);
+				Ti.App.Properties.setString('pocketUserName', e.userName);
+
+				pocket.request('v3/add', {
+					"url": "https://github.com/",
+					"access_token": Ti.App.Properties.getString("pocketAccessTokenKey"),
+					"consumer_key": pocket.getConsumerKey()
+				}, {
+					"Content-Type": "application/json; charset=UTF-8"
+				}, 'POST', function(e){
+					if (e.success) {
+						var json = JSON.parse(e.result.text);
+						Ti.API.info(json);
+						pocketLabel.setText(Ti.App.Properties.getString("pocketUserName") + ' on Pocket');
+						pocketRow.add(pocketSwitch);
+						pocketRow.touchEnabled = false;
+						pocketRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.NONE;
+						if (event) {
+							pocketRow.removeEventListener('click', pocketAuthorize);
+						}
+					} else {
+						// error proc...
+					}
+				});
+			} else {
+				// error proc…
+			}
+		});
+
+		pocket.authorize();
+	};
+
+	if (pocket.authorized) {
+		pocketAuthorize();
+	} else {
+		pocketRow.touchEnabled = true;
+		pocketRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.BLUE;
+
+		pocketRow.addEventListener('click', pocketAuthorize);
 	}
 
 	tableView.setData(sections);
