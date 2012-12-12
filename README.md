@@ -12,6 +12,7 @@
 * Added hatena.js
 * Added dropbox.js
 * Added pocket.js
+* Added evernote.js
 * Rewrite the app.js
 * Extend platform.request(path, params, headers, httpVerb, callback); path is replaced url possible. Added headers.
 * Logout method support.
@@ -68,6 +69,10 @@ Anyway authentication only, How to Resources/app.js
 
 Not required callback URL.
 
+## evernote.js
+
+Select Development (Sandbox) or Production parameter.
+Please read app.js and evernote.js.
 
 ## logout example
 var twitter = require('twitter').Twitter({ ... });
