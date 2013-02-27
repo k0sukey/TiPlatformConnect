@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ti:app xmlns:ti="http://ti.appcelerator.org">
-    <sdk-version>tishadow</sdk-version>
+    <sdk-version>3.0.0.GA</sdk-version>
     <property name="ti.android.fastdev" type="bool">false</property>
     <deployment-targets>
         <target device="mobileweb">false</target>

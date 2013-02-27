@@ -1,13 +1,18 @@
 (function () {
     Ti.Facebook.appid = 'XXXXXXXXXXXXXXX';
     Ti.Facebook.permissions = ['publish_stream', 'offline_access'];
+    var configJSON, file, config;
+    configJSON = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, 'config.json');
+    file = configJSON.read().toString();
+    config = JSON.parse(file);
 
     var twitter = require('twitter').Twitter({
-        consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
-        consumerSecret: 'XXXXXXXXXXXXXXXXXXXX',
-        accessTokenKey: Ti.App.Properties.getString('twitterAccessTokenKey', ''),
-        accessTokenSecret: Ti.App.Properties.getString('twitterAccessTokenSecret', '')
+      consumerKey:config.twitter.consumerKey,
+      consumerSecret:config.twitter.consumerSecret,
+      accessTokenKey: Ti.App.Properties.getString('twitterAccessTokenKey', ''),
+      accessTokenSecret: Ti.App.Properties.getString('twitterAccessTokenSecret', '')
     });
+
 
     var linkedin = require('linkedin').Linkedin({
         consumerKey: 'XXXXXXXXXXXXXXXXXXXX',
@@ -106,6 +111,14 @@
         accessTokenKey: Ti.App.Properties.getString("evernoteAccessTokenKey", ""),
         sandbox: true
     });
+
+    var yammer = require('yammer').Yammer({
+      consumerKey:config.yammer.consumerKey,
+      consumerSecret:config.yammer.consumerSecret,
+      accessTokenKey: Ti.App.Properties.getString("yammerAccessTokenKey", ""),
+      accessTokenSecret: Ti.App.Properties.getString("yammerAccessTokenSecret", "")
+    });
+
 
     var window = Ti.UI.createWindow({
         title: 'TiPlatformConnect',
@@ -1440,6 +1453,67 @@
         evernoteRow.addEventListener('click', evernoteAuthorize);
     }
 
+    var yammerRow = Ti.UI.createTableViewRow({
+      touchEnabled: false,
+      selectionStyle: Ti.UI.iPhone.TableViewCellSelectionStyle.NONE
+    });
+    platformSection.add(yammerRow);
+
+    var yammerLabel = Ti.UI.createLabel({
+      left: 10,
+      text: 'Sign in with Yammer'
+    });
+    yammerRow.add(yammerLabel);
+
+    var yammerSwitch = Ti.UI.createSwitch({
+      right: 10,
+      value: Ti.App.Properties.getBool('yammerShareSwitch', true)
+    });
+    yammerSwitch.addEventListener('change', function(e){
+      Ti.App.Properties.setBool('yammerShareSwitch', e.value);
+    });
+
+    var yammerAuthorize = function(event){
+      yammer.addEventListener('login', function(e){
+
+        if (e.success) {
+          
+          Ti.App.Properties.setString('yammerAccessTokenKey', e.accessTokenKey);
+          yammer.request('api/v1/users/current.json', {}, {}, 'GET', function(e){
+
+            if (e.success) {
+              
+              var json = JSON.parse(e.result.text);
+              yammerLabel.setText(json.name + ' on Yammer');
+              yammerRow.add(yammerSwitch);
+              yammerRow.touchEnabled = false;
+              yammerRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.NONE;
+
+              if (event) {
+                yammerRow.removeEventListener('click', yammerAuthorize);
+              }
+            } else {
+              // error proc...
+            }
+          });
+        } else {
+          Ti.API.info("yammerAuthorize Fail.");
+          // error proc…
+        }
+      });
+
+      yammer.authorize();
+    };
+
+    if (yammer.authorized) {
+      yammerAuthorize();
+    } else {
+      yammerRow.touchEnabled = true;
+      yammerRow.selectionStyle = Ti.UI.iPhone.TableViewCellSelectionStyle.BLUE;
+      yammerCallback = true;
+
+      yammerRow.addEventListener('click', yammerAuthorize);
+    }
     tableView.setData(sections);
 
     var tab = Ti.UI.createTab({
