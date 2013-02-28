@@ -13,6 +13,7 @@
 * Added dropbox.js
 * Added pocket.js
 * Added evernote.js
+* Added yammer.js
 * Rewrite the app.js
 * Extend platform.request(path, params, headers, httpVerb, callback); path is replaced url possible. Added headers.
 * Logout method support.
@@ -73,6 +74,10 @@ Not required callback URL.
 
 Select Development (Sandbox) or Production parameter.
 Please read app.js and evernote.js.
+
+## yammer.js
+
+Not required callback URL.
 
 ## logout example
 var twitter = require('twitter').Twitter({ ... });
